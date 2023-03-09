@@ -3,6 +3,7 @@ import { Box, Input } from "@chakra-ui/react";
 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { firebaseConfig } from "./utils";
 
 import {
   getFunctions,
@@ -11,37 +12,46 @@ import {
 } from "firebase/functions";
 import ContentEditable from "react-contenteditable";
 
-function ConinuationBox() {
-  const [userPrompt, setUserPrompt] = useState("hello");
-  const [continuation, setContinuation] = useState(" this is a continuation");
-  const [context, setContext] = useState(0);
+function ConinuationBox(props) {
+  const firebaseApp = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(firebaseApp);
+  const functions = getFunctions(firebaseApp);
 
-  const rawContentText = useRef("");
+  const refInputSpan = useRef(null)
+  if (window.location.hostname == "localhost") {
+    connectFunctionsEmulator(functions, "localhost", 5001);
+  }
+
+  const getContination = httpsCallable(functions, "getContination");
+
+  const [userPrompt, setUserPrompt] = useState("hello");
+  const [continuation, setContinuation] = useState("");
+
   useEffect(() => {
-    rawContentText.current = `<span id="userPrompt">${userPrompt}</span><span id="continuation" style="background:#add8e6">${continuation}</span>`;
-    setContext((c) => c + 1);
+    refInputSpan.current.innerText = userPrompt
   }, [userPrompt, continuation]);
 
   return (
-    <Box>
-      <ContentEditable
-        id={context}
+    <Box >
+      <span
+        contentEditable
+        suppressContentEditableWarning={true}
+
+        onBlur={async (e)=>{
+          console.log(refInputSpan.current.innerText)
+          const res = await getContination({prompt:refInputSpan.current.innerText})
+          refInputSpan.current.innerText = refInputSpan.current.innerText + continuation
+
+          setContinuation(res.data.continuation)
+        }}
+        ref={refInputSpan}
         style={{
-          width: "100%",
-          border: "1px solid #aaa",
-          margin: "10px",
-          padding: "10px",
+      
         }}
-        html={rawContentText.current}
-        onBlur={(e) => {
-          console.log(e.target.innerHTML);
-          setUserPrompt(e.target.outerText + "<br><br>whoa!");
-          setContinuation("");
-        }}
-        onChange={(e) => {}}
+        
       />
-      U:{userPrompt}
-      C:{continuation}
+      <span style={{background:"#add8e6"}}>{continuation}</span>
+ 
     </Box>
   );
 }
