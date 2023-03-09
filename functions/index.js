@@ -7,17 +7,16 @@ exports.getContination = functions.https.onRequest((req, res) => {
     const { prompt } = req.body.data;
 
     const configuration = new Configuration({
-        apiKey: process.env.OPENAI_API_KEY,
-      });
+      apiKey: process.env.OPENAI_API_KEY,
+    });
     const openai = new OpenAIApi(configuration);
-    console.log(prompt)
     const promptResult = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 500,
-        temperature: 0,
-        stop: `.`,
-      });
+      model: "text-davinci-003",
+      prompt: prompt,
+      max_tokens: 500,
+      temperature: 0,
+      stop: `.`,
+    });
 
     const parsedPromptResult = promptResult.data.choices[0].text;
 
