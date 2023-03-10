@@ -5,6 +5,7 @@ import { GiBrainstorm } from "react-icons/gi";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { firebaseConfig } from "./utils";
+import { store } from "./utils";
 
 import "./App.css";
 
@@ -15,19 +16,19 @@ import {
 } from "firebase/functions";
 import ContentEditable from "react-contenteditable";
 
-function ConinuationBox({ primer }) {
+function ConinuationBox({ primer, dataKey }) {
   const firebaseApp = initializeApp(firebaseConfig);
   const analytics = getAnalytics(firebaseApp);
   const functions = getFunctions(firebaseApp);
 
   const refInputSpan = useRef(null);
-  const refContinuationSpan = useRef(null);
+
+  const [text, setText] = store.useState(dataKey);
   if (window.location.hostname == "localhost") {
     connectFunctionsEmulator(functions, "localhost", 5001);
   }
 
   const getContination = httpsCallable(functions, "getContination");
-
   const [isLoading, setIsLoading] = useState(false);
 
   function setPlaceholder() {
@@ -53,32 +54,35 @@ function ConinuationBox({ primer }) {
     );
     refInputSpan.current.innerHTML =
       reformattedText +
-      `<span id='continuaiton' style="animation: backgroundFade 3s;">${res.data.continuation}</span>`;
+      `<span id='continuaiton' style="animation: backgroundFade 4s;">${res.data.continuation}</span>`;
 
+    setText(refInputSpan.current.innerText);
     setIsLoading(false);
   }
   return (
-    <Box width="100%" display="flex" flexDir="column">
+    <Box width="100%" display="flex" flexDir="row">
       <div
         contentEditable="plaintext-only"
         suppressContentEditableWarning={true}
-        onInput={() => {}}
+        onInput={() => {
+          setText(refInputSpan.current.innerText);
+        }}
         ref={refInputSpan}
         style={{
           width: "100%",
-          border: "1px solid #ddd",
+          border: "1px solid #E2E8F0",
           borderRadius: "5px",
-          padding: "5px",
         }}
       />
 
       <IconButton
-        alignSelf="flex-end"
         size="sm"
         onClick={() => {
           initiateAC();
         }}
-        mt="10px"
+        ml="5px"
+        pt="20px"
+        pb="20px"
         isLoading={isLoading}
         aria-label="AI Complete"
         icon={<GiBrainstorm />}

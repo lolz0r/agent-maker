@@ -9,13 +9,13 @@ import {
 } from "@chakra-ui/react";
 import ConinuationBox from "./ContinuationBox";
 
-function ConinuationPrompt({ userQuery, aiPrimer, tooltip }) {
+function ConinuationPrompt({ userQuery, aiPrimer, tooltip, dataKey }) {
   return (
     <Box p="10px">
       <Tooltip label={tooltip}>
         <Text fontWeight={"bold"}>{userQuery}</Text>
       </Tooltip>
-      <ConinuationBox primer={aiPrimer}></ConinuationBox>
+      <ConinuationBox dataKey={dataKey} primer={aiPrimer}></ConinuationBox>
     </Box>
   );
 }
