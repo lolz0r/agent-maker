@@ -51,8 +51,7 @@ function App() {
         aiPrimer="You are instructed to help complete a user's input that determining the rules governing the behavior and process of an AI Chatbot. Be concise. One rule per line."
       ></ConinuationPrompt>
 
-      <Text fontWeight="bold">Example Actions</Text>
-      <TurnEditor dataKey="agentExamples"></TurnEditor>
+      <TurnEditor title="Example Actions" dataKey="agentExamples"></TurnEditor>
     </Box>
   );
 }

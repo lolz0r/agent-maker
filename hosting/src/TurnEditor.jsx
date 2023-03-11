@@ -12,12 +12,15 @@ import {
 } from "@chakra-ui/react";
 import ConinuationBox from "./ContinuationBox";
 import { store } from "./utils";
+import { RiAddCircleFill } from "react-icons/ri";
 
-function TurnEditor({ dataKey }) {
+function TurnEditor({ dataKey, title }) {
   const [examples, setExamples] = store.useState(dataKey);
 
   return (
     <Box p="10px">
+      <Text fontWeight="bold">{title}</Text>
+
       <Grid templateColumns="auto 1fr" gap={"5px"}>
         {examples &&
           examples.map((turn, idx) => {
@@ -31,7 +34,17 @@ function TurnEditor({ dataKey }) {
                   rowEnd={idx + 2}
                   alignSelf="center"
                 >
-                  <Select placeholder="Turn Type" value={turn.type}>
+                  <Select
+                    size="xs"
+                    value={turn.type}
+                    onChange={(e) => {
+                      //e.target.value
+                      let updatedExamples = [...examples];
+
+                      updatedExamples[idx] = { ...turn, type: e.target.value };
+                      setExamples(updatedExamples);
+                    }}
+                  >
                     <option value="observation">Observation</option>
                     <option value="thought">Thought</option>
                     <option value="action">Action</option>
@@ -46,12 +59,27 @@ function TurnEditor({ dataKey }) {
                 >
                   <ConinuationBox
                     dataKey={`${dataKey}.${idx}`}
-                    primer="Complete the following message within a observation-thought-action chain:"
+                    primer={`Complete the following message of type ${turn.type} within a observation-thought-action chain:`}
                   ></ConinuationBox>
                 </GridItem>
               </>
             );
           })}
+        <GridItem colStart="1" colEnd="2">
+          <IconButton
+            colorScheme="blue"
+            size="xs"
+            icon={<RiAddCircleFill />}
+            onClick={() => {
+              //e.target.value
+              let updatedExamples = [
+                ...examples,
+                { type: "observation", message: "" },
+              ];
+              setExamples(updatedExamples);
+            }}
+          ></IconButton>
+        </GridItem>
       </Grid>
     </Box>
   );
