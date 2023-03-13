@@ -8,6 +8,7 @@ import TurnEditor from "./TurnEditor";
 import ConinuationPrompt from "./ContinuationPrompt";
 
 import { store } from "./utils";
+import ConversationalInterface from "./ConversationalInterface";
 
 import {
   getFunctions,
@@ -37,6 +38,7 @@ function App() {
 
   return (
     <Box w="100vw">
+      <ConversationalInterface></ConversationalInterface>
       <ConinuationPrompt
         dataKey="agentPurpose"
         userQuery="What is the agent's purpose?"

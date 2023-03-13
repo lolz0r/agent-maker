@@ -2,6 +2,41 @@ const functions = require("firebase-functions");
 const cors = require("cors")({ origin: true });
 const { Configuration, OpenAIApi } = require("openai");
 
+const { createMetaAgent } = require("./agentFramework/metaAgent.js");
+const { processUserTurn } = require("./agentFramework/agentProcessor.js");
+
+exports.virtualMakerAgentTurn = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const { agentLog, userReply } = req.body.data;
+
+    const agent = createMetaAgent();
+
+    if (userReply == null || agentLog == null) {
+      // no context provided, return early and give the user the initial context
+      res.json({
+        status: "OK",
+        data: {
+          agentLog: agent.cotPrompt,
+        },
+      });
+      return;
+    }
+
+    let updatedLog = await processUserTurn({
+      agent,
+      agentLog,
+      userReply,
+    });
+
+    res.json({
+      status: "OK",
+      data: {
+        agentLog: updatedLog,
+      },
+    });
+  });
+});
+
 exports.getContination = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     const { prompt } = req.body.data;
@@ -23,7 +58,7 @@ exports.getContination = functions.https.onRequest((req, res) => {
     res.json({
       status: "OK",
       data: {
-        continuation: parsedPromptResult,
+        continuation: parsedPromptResult + ".",
       },
     });
   });
