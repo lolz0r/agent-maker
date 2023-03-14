@@ -64,7 +64,7 @@ function ConversationalInterface({}) {
         userReply: userReply,
         agentLog: agentLog,
       });
-      console.log(vtaRes.data);
+
       setAgentLog(vtaRes.data.agentLog);
 
       console.log(vtaRes.data);
@@ -94,7 +94,11 @@ function ConversationalInterface({}) {
         <Stack direction="column">
           <Stack m="2">
             {renderedAgentLog.map((c) => (
-              <ConversationTurn c={c} showCOT={showCOT}></ConversationTurn>
+              <ConversationTurn
+                key={c.message}
+                c={c}
+                showCOT={showCOT}
+              ></ConversationTurn>
             ))}
           </Stack>
           <Box

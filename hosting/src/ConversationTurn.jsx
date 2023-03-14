@@ -31,6 +31,23 @@ function ConversationTurn({ c, showCOT }) {
       </Box>
     );
   }
+  if (c.type == "action" && c.actionType == "SynthesizeAgent") {
+    return (
+      <Box
+        key={JSON.stringify(c)}
+        backgroundColor={"lightgray"}
+        alignSelf={"self-start"}
+        p="3"
+        w="90%"
+        borderRadius="20px"
+      >
+        <Text fontSize="xs">
+          <b>Generated Agent:</b>{" "}
+          <pre>{JSON.stringify(c.agentJSON, null, 2)}</pre>
+        </Text>
+      </Box>
+    );
+  }
   if (c.type == "action" && c.actionType == "AddTool") {
     return (
       <Box
