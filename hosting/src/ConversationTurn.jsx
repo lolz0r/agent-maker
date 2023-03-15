@@ -43,8 +43,11 @@ function ConversationTurn({ c, showCOT }) {
       >
         <Text fontSize="xs">
           <b>Generated Agent:</b>{" "}
-          <pre>{JSON.stringify(c.agentJSON, null, 2)}</pre>
         </Text>
+
+        <pre style={{ fontSize: "10px" }}>
+          {JSON.stringify(c.agentJSON, null, 2)}
+        </pre>
       </Box>
     );
   }
