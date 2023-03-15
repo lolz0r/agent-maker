@@ -23,6 +23,8 @@ import {
 } from "firebase/functions";
 
 import { firebaseConfig } from "./utils";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import styles from "./App.css";
 
 function App() {
   const firebaseApp = initializeApp(firebaseConfig);
@@ -37,47 +39,43 @@ function App() {
   }
 
   return (
-    <Box w="100vw">
-      <SimpleGrid gridTemplateColumns="1fr 500px" height="100vh">
-        <ConversationalInterface></ConversationalInterface>
-        <Box>
-          <AceEditor
-            width="100%"
-            height="100%"
-            placeholder="Agent JSON Definition"
-            value={activeAgentJSON ? activeAgentJSON : ""}
-            mode="json"
-            wrapEnabled="true"
-            fontSize={14}
-            showGutter={true}
-            highlightActiveLine={true}
-            theme="kuroir"
-            onChange={() => {}}
-            name="UNIQUE_ID_OF_DIV"
-            editorProps={{}}
-          />
-          ,
-          {/*
-            <ConinuationPrompt
-            dataKey="agentPurpose"
-            userQuery="What is the agent's purpose?"
-            tooltip="Consicely describe the purpose of the AI chatbot."
-            aiPrimer="You are instructed to help complete a user's input that determining the purpose of an AI Chatbot. Be concise."
-          ></ConinuationPrompt>
+    <Box w="100vw" height="100vh">
+      <PanelGroup autoSaveId="mainPanelLayout" direction="horizontal">
+        <Panel defaultSize={50}>
+          <ConversationalInterface></ConversationalInterface>
+        </Panel>
+        <PanelResizeHandle>
+          <Box w="10px"></Box>
+        </PanelResizeHandle>
 
-          <ConinuationPrompt
-            dataKey="agentRules"
-            userQuery="What are the agent's Rules?"
-            tooltip="Input rules that control the behavior of the bot. One rule per line."
-            aiPrimer="You are instructed to help complete a user's input that determining the rules governing the behavior and process of an AI Chatbot. Be concise. One rule per line."
-          ></ConinuationPrompt>
-
-          <TurnEditor
-            title="Example Actions"
-            dataKey="agentExamples"
-          ></TurnEditor>*/}
-        </Box>
-      </SimpleGrid>
+        <Panel defaultSize={50}>
+          <PanelGroup direction="vertical">
+            <Panel defaultSize={50}>
+              <AceEditor
+                width="100%"
+                height="100%"
+                placeholder="Agent JSON Definition"
+                value={activeAgentJSON ? activeAgentJSON : ""}
+                mode="json"
+                wrapEnabled={true}
+                fontSize={14}
+                showGutter={true}
+                highlightActiveLine={true}
+                theme="kuroir"
+                onChange={() => {}}
+                name="UNIQUE_ID_OF_DIV"
+                editorProps={{}}
+              />
+            </Panel>
+            <PanelResizeHandle>
+              <Box w="100%" h="10px"></Box>
+            </PanelResizeHandle>
+            <Panel defaultSize={50}>
+              <Box w="100%" h="100%" backgroundColor="#222"></Box>
+            </Panel>
+          </PanelGroup>
+        </Panel>
+      </PanelGroup>
     </Box>
   );
 }

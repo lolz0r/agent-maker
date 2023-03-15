@@ -254,7 +254,6 @@ function ConversationalInterface({}) {
     clientSidePendingProcessingTurns.forEach((turn) => {
       refProcessedTurnIDs.current[turn.id] = true;
       if (turn.actionType == "SynthesizeAgent") {
-        debugger;
         setActiveAgentJSON(JSON.stringify(turn.agentJSON, null, 4));
       }
     });
@@ -341,15 +340,19 @@ function ConversationalInterface({}) {
             </InputGroup>
 
             <Box p="10" backgroundColor="#ffddee">
-              <Switch
-                mb="3"
-                isChecked={showCOT}
-                onChange={(e) => {
-                  setShowCOT(e.target.checked);
-                }}
-              >
-                Show Agent's Chain of Thought
-              </Switch>
+              <Box display="flex" flexDir="row" alignContent="center">
+                <Switch
+                  mb="3"
+                  isChecked={showCOT}
+                  onChange={(e) => {
+                    setShowCOT(e.target.checked);
+                  }}
+                ></Switch>
+                <Text ml="5px" fontSize="sm">
+                  Show Agent's Chain of Thought
+                </Text>
+              </Box>
+
               <Text fontSize="sm" color="gray">
                 This is a demo of an AI agent that helps to generate other AI
                 agents, a 'meta agent'
