@@ -8,9 +8,6 @@ export const firebaseConfig = {
   measurementId: "G-XS1XE9TZHZ",
 };
 
-import { createGlobalState } from "react-hooks-global-state";
-
-export const { useGlobalState } = createGlobalState({});
-
 import { createStore } from "state-pool";
 export const store = createStore(); // Create store for storing our global state
+store.setState("activeAgentJSON", "{}");

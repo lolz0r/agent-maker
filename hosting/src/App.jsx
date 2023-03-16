@@ -38,6 +38,19 @@ function App() {
     connectFunctionsEmulator(functions, "localhost", 5001);
   }
 
+  useEffect(() => {
+    console.log("changed", activeAgentJSON);
+  }, [activeAgentJSON]);
+
+  const annotations = [
+    {
+      row: 3, // must be 0 based
+      column: 4, // must be 0 based
+      text: "error.message", // text to show in tooltip
+      type: "error",
+    },
+  ];
+
   return (
     <Box w="100vw" height="100vh">
       <PanelGroup autoSaveId="mainPanelLayout" direction="horizontal">
@@ -45,17 +58,24 @@ function App() {
           <ConversationalInterface></ConversationalInterface>
         </Panel>
         <PanelResizeHandle>
-          <Box w="10px"></Box>
+          <Box w="5px" h="100%" backgroundColor="#ddd"></Box>
         </PanelResizeHandle>
 
         <Panel defaultSize={50}>
           <PanelGroup direction="vertical">
-            <Panel defaultSize={50}>
+            <Panel
+              defaultSize={50}
+              onResize={() => {
+                window.dispatchEvent(new Event("resize"));
+              }}
+            >
               <AceEditor
-                width="100%"
-                height="100%"
+                annotations={annotations}
+                setOptions={{ useWorker: false }}
+                width="calc( 100% )"
+                height="calc( 100% )"
                 placeholder="Agent JSON Definition"
-                value={activeAgentJSON ? activeAgentJSON : ""}
+                value={activeAgentJSON}
                 mode="json"
                 wrapEnabled={true}
                 fontSize={14}
@@ -63,12 +83,12 @@ function App() {
                 highlightActiveLine={true}
                 theme="kuroir"
                 onChange={() => {}}
-                name="UNIQUE_ID_OF_DIV"
+                name="jsonEditor"
                 editorProps={{}}
               />
             </Panel>
             <PanelResizeHandle>
-              <Box w="100%" h="10px"></Box>
+              <Box w="100%" h="5px" backgroundColor="#ddd"></Box>
             </PanelResizeHandle>
             <Panel defaultSize={50}>
               <Box w="100%" h="100%" backgroundColor="#222"></Box>

@@ -254,7 +254,11 @@ function ConversationalInterface({}) {
     clientSidePendingProcessingTurns.forEach((turn) => {
       refProcessedTurnIDs.current[turn.id] = true;
       if (turn.actionType == "SynthesizeAgent") {
-        setActiveAgentJSON(JSON.stringify(turn.agentJSON, null, 4));
+        setTimeout(() => {
+          const agentJSON = JSON.stringify(turn.agentJSON, null, 4);
+          console.log("settting", agentJSON);
+          setActiveAgentJSON(agentJSON);
+        }, 100);
       }
     });
 
