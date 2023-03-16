@@ -38,18 +38,7 @@ function App() {
     connectFunctionsEmulator(functions, "localhost", 5001);
   }
 
-  useEffect(() => {
-    console.log("changed", activeAgentJSON);
-  }, [activeAgentJSON]);
-
-  const annotations = [
-    {
-      row: 3, // must be 0 based
-      column: 4, // must be 0 based
-      text: "error.message", // text to show in tooltip
-      type: "error",
-    },
-  ];
+  const annotations = [];
 
   return (
     <Box w="100vw" height="100vh">
@@ -91,7 +80,11 @@ function App() {
               <Box w="100%" h="5px" backgroundColor="#ddd"></Box>
             </PanelResizeHandle>
             <Panel defaultSize={50}>
-              <Box w="100%" h="100%" backgroundColor="#222"></Box>
+              <Box w="100%" h="100%">
+                <Text size="lg" fontWeight="bold" textAlign="center">
+                  Generated Agent (Interactive)
+                </Text>
+              </Box>
             </Panel>
           </PanelGroup>
         </Panel>
