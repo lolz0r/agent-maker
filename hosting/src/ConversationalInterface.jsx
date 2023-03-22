@@ -45,8 +45,78 @@ function ConversationalInterface({}) {
   const [errorState, setErrorState] = useState(null);
   const [showCOT, setShowCOT] = useState(true);
 
-  const [chatLog, setChatLog] = useState([]);
+  const [chatLog, setChatLog] = useState([
+    {
+      role: "user",
+      content:
+        "<observation:user>make me an agent to help people sell real estate</observation:user>",
+    },
+    {
+      role: "assistant",
+      content:
+        "<thought>The user wants an AI agent to help people sell real estate. The purpose of the agent is a real estate sales assistant. I must now determine what tools the real estate sales assistant can use.</thought>\n<action:talk>What tools will the agent have access to?</action:talk>\n",
+    },
+    {
+      role: "user",
+      content: "<observation:user>suggest some please</observation:user>",
+    },
+    {
+      role: "assistant",
+      content:
+        "<thought>Since the agent is going to help people sell real estate, it will need access to a database of properties, a communication system to interact with potential buyers, and a payment processing system to handle transactions. I will suggest these tools to the user.</thought>\n<action:talk>The agent will need access to a database of properties, a communication system to interact with potential buyers, and a payment processing system to handle transactions. Does this sound good?</action:talk>",
+    },
+  ]);
   const [renderedAgentLog, setRenderedAgentLog] = useState([]);
+
+  useEffect(() => {
+    // generate a prompt from the log, if applicable
+    let generatedPrompt = "";
+
+    let agentPurpose = "";
+    let agentTools = [];
+    let agentRules = [];
+    let agentExampleConversations = [];
+    chatLog.forEach((turn) => {
+      // parse the content of the turn
+      const turnContents = parseData(`<data>${turn.content}</data>`);
+      turnContents.forEach((t) => {
+        if (t.type == "action") {
+          if (t.actionType == "SetAgentPrompt") {
+            agentPurpose = t.content;
+          }
+          if (t.actionType == "AddTool") {
+            const [name, description] = t.content.split(":");
+            agentTools.push({ name, description });
+          }
+          if (t.actionType == "AddRule") {
+            agentRules.push(t.content);
+          }
+          if (t.actionType == "AddExampleConversation") {
+            agentExampleConversations.push(t.innerText);
+          }
+        }
+      });
+    });
+    // now render the contents
+    generatedPrompt = `${agentPurpose}
+Rules:
+${agentRules.map((rule, idx) => `${idx}. ${rule}\n`).join("")}
+You have the following tools:
+${agentTools
+  .map((tool) => `<action:${tool.name}> ... ${tool.description}\n`)
+  .join("")}
+
+${agentExampleConversations
+  .map(
+    (conversation) => `Example Conversation:
+===
+${conversation}
+===
+`
+  )
+  .join("")}
+`;
+  }, [chatLog]);
 
   useEffect(() => {
     // get initial context

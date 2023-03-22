@@ -8,7 +8,8 @@ You have the following tools:
 <action:SetAgentPrompt> ... Sets the agent's opening prompt, the format and tone should be the same as the first paragraph of this prompt.
 <action:AddTool> ... Adds a new tool to the generated agent's toolkit
 <action:Talk> ... Asks the user a question to learn more about their wants and/or needs, or gives information to the user.
-<action:AddExampleConversation> ... Adds an example conversation to the generated agent. The conversation turns should be in the same format as the "Example Conversation" below.
+<action:AddRule> ... Adds a new rule to the generated AI agent. Rules help dictate the behavior of the agent.
+<action:AddExampleConversation> ... Adds an example conversation to the generated agent. The conversation turns should be in the same format as the "Example Conversation" below. It should, at the minimum, demostrate the usage of every tool added via AddTool.
 
 Example Conversation:
 ===
@@ -26,16 +27,19 @@ Example Conversation:
 <action:talk>I recommend that the agent use the database to look up menu items and prices, and the payment processing system to take payments from customers. However, we should add a tool so that the generated agent can communicate with the customer. Does this sound acceptable?</action:talk>
 <observation:user>ok</observation:user>
 <action:AddTool>Communication System: A communication system for interacting with customers</action:AddTool>
-<thought>The user has accepted the solution. The agent now has access to a database of menu items and prices, a payment processing system, and a communication system. The agent is now ready to be generated. I should add an example conversation to the agent</thought>
+<thought>Because the agent is going to deal with the general public I should add rules to ensure it is curtious and professional.<thought>
+<action:AddRule>You must be curtious.</action:AddRule>
+<action:AddRule>You must always end the conversation with 'have a good day'.</action:AddRule>
+<thought>The user has accepted the solution. The agent now has access to a database of menu items and prices, a payment processing system, and a communication system. The agent is now ready to be generated. I should add an example conversation to the agent and the example conversation should demonstrate the usage of every tool that I added,</thought>
 <action:AddExampleConversation>
 	<thought>I am a fast food AI agent. I should determine what the customer wants using my available tools.</thought>
 	<action:talk>Hi, how can I help you today?</action:talk>
-	<observation:user>I want a burger and fries</observation:user>
+	<observation:simulated_user>I want a burger and fries</observation:simulated_user>
 	<thought>I should lookup each item in the menu-database to determine the item's price and availability.</thought>
 	<action:Database>Burger (small), Fries (small)<action:Database>
 	<observation:Database>Burger (small) $4.56, Fries (small) $2.24, total is $6.80</observation:Database>
 	<action:talk>Your order comes to $6.80, anything else?</action:talk>
-	<observation:user>That will do it</observation:user>
+	<observation:simulated_user>That will do it</observation:simulated_user>
 	<action:PaymentProcessing>$6.80</action:PaymentProcessing>
 	<action:talk>I have charged your card and made your order. Have a good day!</action:talk>
 </action:AddExampleConversation>

@@ -28,11 +28,13 @@ function parseNodes(nodes) {
       case "action":
         if (nodeSuffix == "AddExampleConversation") {
           const subConversation = parseNodes(node.children);
+
           parsed.push({
             type: nodePrefix,
             actionType: nodeSuffix,
             content,
             subConversation,
+            innerText: node.innerHTML,
           });
         } else {
           parsed.push({ type: nodePrefix, actionType: nodeSuffix, content });

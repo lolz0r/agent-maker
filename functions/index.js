@@ -87,7 +87,7 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
 
     const promptResult = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
-      max_tokens: 500,
+      max_tokens: 1000,
       messages: [{ role: "system", content: promptText }, ...updatedLog],
       temperature: 0,
       stop: `<observation:user>`,
