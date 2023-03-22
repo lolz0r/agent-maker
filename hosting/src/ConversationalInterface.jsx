@@ -22,7 +22,7 @@ import {
   httpsCallable,
   connectFunctionsEmulator,
 } from "firebase/functions";
-import { firebaseConfig } from "./utils";
+import { firebaseConfig, parseData } from "./utils";
 import ConversationTurn from "./ConversationTurn";
 
 function ConversationalInterface({}) {
@@ -81,10 +81,30 @@ function ConversationalInterface({}) {
 
     let renderedLog = [];
     chatLog.forEach((turn) => {
-      renderedLog.push({
-        type: "observation",
-        from: "user",
-        message: turn.content,
+      // parse the content of the turn
+      const turnContents = parseData(`<data>${turn.content}</data>`);
+      turnContents.forEach((t) => {
+        if (t.type == "observation") {
+          renderedLog.push({
+            type: t.type,
+            from: t.observationSource,
+            message: t.content,
+          });
+        }
+        if (t.type == "action") {
+          console.log(t);
+          renderedLog.push({
+            type: t.type,
+            message: t.content,
+            actionType: t.actionType,
+          });
+        }
+        if (t.type == "thought") {
+          renderedLog.push({
+            type: t.type,
+            message: t.content,
+          });
+        }
       });
     });
     setRenderedAgentLog(renderedLog);

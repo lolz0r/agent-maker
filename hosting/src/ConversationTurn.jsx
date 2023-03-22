@@ -31,7 +31,7 @@ function ConversationTurn({ c, showCOT }) {
       </Box>
     );
   }
-  if (c.type == "action" && c.actionType == "SynthesizeAgent") {
+  if (c.type == "action" && c.actionType == "AddExampleConversation") {
     return (
       <Box
         key={JSON.stringify(c)}
@@ -42,12 +42,9 @@ function ConversationTurn({ c, showCOT }) {
         borderRadius="20px"
       >
         <Text fontSize="xs">
-          <b>Generated Agent:</b>{" "}
+          <b>Agent Action:</b>{" "}
+          <i>{c.actionType} ... (see generated agent parameters)</i>
         </Text>
-
-        <pre style={{ fontSize: "10px" }}>
-          {JSON.stringify(c.agentJSON, null, 2)}
-        </pre>
       </Box>
     );
   }
@@ -61,10 +58,7 @@ function ConversationTurn({ c, showCOT }) {
         borderRadius="20px"
       >
         <Text fontSize="xs">
-          <b>Added Tool:</b>{" "}
-          <i>
-            {c.toolName}: {c.toolDescription}{" "}
-          </i>
+          <b>Added Tool:</b> <i>{c.message}</i>
         </Text>
       </Box>
     );

@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const cors = require("cors")({ origin: true });
 const { Configuration, OpenAIApi } = require("openai");
+const { readFile } = require("fs/promises");
 
 /*
 const { createMetaAgent } = require("./agentFramework/metaAgent.js");
@@ -74,13 +75,22 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
       apiKey: process.env.OPENAI_API_KEY,
     });
     const openai = new OpenAIApi(configuration);
-    const updatedLog = [...chatLog, { role: "user", content: userReply }];
+    const promptText = await readFile("prompt-template.txt", "utf8");
+
+    const updatedLog = [
+      ...chatLog,
+      {
+        role: "user",
+        content: `<observation:user>${userReply}</observation:user>`,
+      },
+    ];
+
     const promptResult = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       max_tokens: 500,
-      messages: updatedLog,
+      messages: [{ role: "system", content: promptText }, ...updatedLog],
       temperature: 0,
-      //stop: ``,
+      stop: `<observation:user>`,
     });
 
     const parsedPromptResult = promptResult.data.choices[0];
