@@ -11,3 +11,54 @@ export const firebaseConfig = {
 import { createStore } from "state-pool";
 export const store = createStore(); // Create store for storing our global state
 store.setState("activeAgentJSON", "{}");
+
+function parseNodes(nodes) {
+  let parsed = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const [nodePrefix, nodeSuffix] = node.nodeName.split(":");
+
+    const content = node.textContent.trim();
+
+    switch (nodePrefix) {
+      case "thought":
+        parsed.push({ type: nodePrefix, content });
+        break;
+
+      case "action":
+        if (nodeSuffix == "AddExampleConversation") {
+          const subConversation = parseNodes(node.children);
+          parsed.push({
+            type: nodePrefix,
+            actionType: nodeSuffix,
+            content,
+            subConversation,
+          });
+        } else {
+          parsed.push({ type: nodePrefix, actionType: nodeSuffix, content });
+        }
+
+        break;
+
+      case "observation":
+        parsed.push({
+          type: nodePrefix,
+          observationSource: nodeSuffix,
+          content,
+        });
+        break;
+    }
+  }
+  return parsed;
+}
+
+export function parseData(input) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(input, "text/xml");
+  const nodes = xml.documentElement.childNodes;
+
+  const parsed = parseNodes(nodes);
+
+  debugger;
+  return parsed;
+}
