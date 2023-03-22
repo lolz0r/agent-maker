@@ -59,6 +59,5 @@ export function parseData(input) {
 
   const parsed = parseNodes(nodes);
 
-  debugger;
   return parsed;
 }

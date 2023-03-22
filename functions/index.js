@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const cors = require("cors")({ origin: true });
 const { Configuration, OpenAIApi } = require("openai");
 
+/*
 const { createMetaAgent } = require("./agentFramework/metaAgent.js");
 const { processUserTurn } = require("./agentFramework/agentProcessor.js");
 
@@ -59,6 +60,36 @@ exports.getContination = functions.https.onRequest((req, res) => {
       status: "OK",
       data: {
         continuation: parsedPromptResult + ".",
+      },
+    });
+  });
+});
+*/
+
+exports.runChatTurn = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const { chatLog, userReply } = req.body.data;
+
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+    const updatedLog = [...chatLog, { role: "user", content: userReply }];
+    const promptResult = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      max_tokens: 500,
+      messages: updatedLog,
+      temperature: 0,
+      //stop: ``,
+    });
+
+    const parsedPromptResult = promptResult.data.choices[0];
+    console.log(parsedPromptResult);
+
+    res.json({
+      status: "OK",
+      data: {
+        chatLog: [...updatedLog, parsedPromptResult.message],
       },
     });
   });

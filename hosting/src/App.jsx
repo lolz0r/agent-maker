@@ -69,9 +69,7 @@ function App() {
   </data>`;
 
   useEffect(() => {
-    debugger;
     const result = parseData(rawData);
-    debugger;
   }, []);
 
   return (
