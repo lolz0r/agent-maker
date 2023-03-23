@@ -9,6 +9,7 @@ You have the following tools:
 <action:AddTool> ... Adds a new tool to the generated agent's toolkit
 <action:Talk> ... Asks the user a question to learn more about their wants and/or needs, or gives information to the user.
 <action:AddRule> ... Adds a new rule to the generated AI agent. Rules help dictate the behavior of the agent.
+<action:SetExamplCounterParty> ... Sets the name of the counter-party for the example conversations. Defaults to 'simulated_user
 <action:AddExampleConversation> ... Adds an example conversation to the generated agent. The conversation turns should be in the same format as the "Example Conversation" below. It should, at the minimum, demostrate the usage of every tool added via AddTool.
 
 Example Conversation:

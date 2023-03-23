@@ -38,13 +38,17 @@ function App() {
     connectFunctionsEmulator(functions, "localhost", 5001);
   }
 
-  const annotations = [];
-
+  const [generatedAgentPrompt, setGeneratedAgentPrompt] = store.useState(
+    "generatedAgentPrompt"
+  );
   return (
     <Box w="100vw" height="100vh">
       <PanelGroup autoSaveId="mainPanelLayout" direction="horizontal">
         <Panel defaultSize={50}>
-          <ConversationalInterface></ConversationalInterface>
+          <ConversationalInterface
+            inputSubCaption="This is a demo of an AI agent that helps to generate other AI
+                agents, a 'meta agent'"
+          ></ConversationalInterface>
         </Panel>
         <PanelResizeHandle>
           <Box w="5px" h="100%" backgroundColor="#ddd"></Box>
@@ -58,7 +62,11 @@ function App() {
                 window.dispatchEvent(new Event("resize"));
               }}
             >
-              <AceEditor
+              <Box height="100%" overflowY="scroll">
+                <pre style={{ fontSize: "10px" }}>{generatedAgentPrompt}</pre>
+              </Box>
+              {/*
+                <AceEditor
                 annotations={annotations}
                 setOptions={{ useWorker: false }}
                 width="calc( 100% )"
@@ -74,7 +82,7 @@ function App() {
                 onChange={() => {}}
                 name="jsonEditor"
                 editorProps={{}}
-              />
+              />*/}
             </Panel>
             <PanelResizeHandle>
               <Box w="100%" h="5px" backgroundColor="#ddd"></Box>

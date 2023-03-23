@@ -25,11 +25,12 @@ import {
 import { firebaseConfig, parseData } from "./utils";
 import ConversationTurn from "./ConversationTurn";
 
-function ConversationalInterface({}) {
+function ConversationalInterface({ inputSubCaption }) {
   const firebaseApp = initializeApp(firebaseConfig);
   const functions = getFunctions(firebaseApp);
-  const [activeAgentJSON, setActiveAgentJSON] =
-    store.useState("activeAgentJSON");
+  const [generatedAgentPrompt, setGeneratedAgentPrompt] = store.useState(
+    "generatedAgentPrompt"
+  );
 
   if (window.location.hostname == "localhost") {
     connectFunctionsEmulator(functions, "localhost", 5001);
@@ -114,8 +115,9 @@ ${conversation}
 ===
 `
   )
-  .join("")}
+  .join("")}  
 `;
+    setGeneratedAgentPrompt(generatedPrompt);
   }, [chatLog]);
 
   useEffect(() => {
@@ -269,8 +271,7 @@ ${conversation}
               </Box>
 
               <Text fontSize="sm" color="gray">
-                This is a demo of an AI agent that helps to generate other AI
-                agents, a 'meta agent'
+                {inputSubCaption}
               </Text>
             </Box>
           </Box>
