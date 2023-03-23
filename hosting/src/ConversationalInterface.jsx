@@ -31,6 +31,7 @@ function ConversationalInterface({
   allowSetMetaPrompt,
   placeholder,
   subAgentBG,
+  inititalConversationLog,
 }) {
   const firebaseApp = initializeApp(firebaseConfig);
   const functions = getFunctions(firebaseApp);
@@ -135,36 +136,12 @@ ${conversation}
   }, [chatLog]);
 
   useEffect(() => {
-    // get initial context
-    //pushConversationTurn(null, null);
-  }, []);
+    if (inititalConversationLog && inititalConversationLog.length > 0) {
+      setChatLog(inititalConversationLog);
+    }
+  }, [inititalConversationLog]);
 
   useEffect(() => {
-    // extract out any turn IDs that require special client side processing
-    /*
-    const clientSidePendingProcessingTurns = agentLog.filter((turn) => {
-      return (
-        turn.type == "action" &&
-        turn.actionType == "SynthesizeAgent" &&
-        !Object.keys(refProcessedTurnIDs.current).includes(turn.id)
-      );
-    });
-
-    clientSidePendingProcessingTurns.forEach((turn) => {
-      refProcessedTurnIDs.current[turn.id] = true;
-      if (turn.actionType == "SynthesizeAgent") {
-        setTimeout(() => {
-          const agentJSON = JSON.stringify(turn.agentJSON, null, 4);
-          console.log("settting", agentJSON);
-          setActiveAgentJSON(agentJSON);
-        }, 100);
-      }
-    });
-
-    // parse the agent log into conversation turns for easy displaying
-    setRenderedAgentLog(agentLog);
-    */
-
     let renderedLog = [];
     chatLog.forEach((turn) => {
       // parse the content of the turn
