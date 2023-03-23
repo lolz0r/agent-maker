@@ -31,38 +31,6 @@ function ConversationTurn({ c, showCOT }) {
       </Box>
     );
   }
-  if (c.type == "action" && c.actionType == "AddExampleConversation") {
-    return (
-      <Box
-        key={JSON.stringify(c)}
-        backgroundColor={"lightgray"}
-        alignSelf={"self-start"}
-        p="3"
-        w="90%"
-        borderRadius="20px"
-      >
-        <Text fontSize="xs">
-          <b>Agent Action:</b>{" "}
-          <i>{c.actionType} ... (see generated agent parameters)</i>
-        </Text>
-      </Box>
-    );
-  }
-  if (c.type == "action" && c.actionType == "AddTool") {
-    return (
-      <Box
-        key={JSON.stringify(c)}
-        backgroundColor={"lightgray"}
-        p="3"
-        w="90%"
-        borderRadius="20px"
-      >
-        <Text fontSize="xs">
-          <b>Added Tool:</b> <i>{c.message}</i>
-        </Text>
-      </Box>
-    );
-  }
 
   if (c.type == "observation" && c.from == "user") {
     return (
@@ -80,6 +48,38 @@ function ConversationTurn({ c, showCOT }) {
     );
   }
   if (showCOT) {
+    if (c.type == "action" && c.actionType == "AddTool") {
+      return (
+        <Box
+          key={JSON.stringify(c)}
+          backgroundColor={"lightgray"}
+          p="3"
+          w="90%"
+          borderRadius="20px"
+        >
+          <Text fontSize="xs">
+            <b>Added Tool:</b> <i>{c.message}</i>
+          </Text>
+        </Box>
+      );
+    }
+    if (c.type == "action" && c.actionType == "AddExampleConversation") {
+      return (
+        <Box
+          key={JSON.stringify(c)}
+          backgroundColor={"lightgray"}
+          alignSelf={"self-start"}
+          p="3"
+          w="90%"
+          borderRadius="20px"
+        >
+          <Text fontSize="xs">
+            <b>Agent Action:</b>{" "}
+            <i>{c.actionType} ... (see generated agent parameters)</i>
+          </Text>
+        </Box>
+      );
+    }
     if (c.type == "observation" && c.from != "user") {
       return (
         <Box

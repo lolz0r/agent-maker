@@ -25,7 +25,13 @@ import {
 import { firebaseConfig, parseData } from "./utils";
 import ConversationTurn from "./ConversationTurn";
 
-function ConversationalInterface({ inputSubCaption }) {
+function ConversationalInterface({
+  inputSubCaption,
+  agentPrompt,
+  allowSetMetaPrompt,
+  placeholder,
+  subAgentBG,
+}) {
   const firebaseApp = initializeApp(firebaseConfig);
   const functions = getFunctions(firebaseApp);
   const [generatedAgentPrompt, setGeneratedAgentPrompt] = store.useState(
@@ -39,37 +45,43 @@ function ConversationalInterface({ inputSubCaption }) {
   const runChatTurn = httpsCallable(functions, "runChatTurn");
 
   const refConversationContainer = useRef(null);
-  const refProcessedTurnIDs = useRef({});
 
   const [userQuery, setUserQuery] = useState("");
   const [isQueryLoading, setIsQueryLoading] = useState(false);
   const [errorState, setErrorState] = useState(null);
   const [showCOT, setShowCOT] = useState(true);
 
-  const [chatLog, setChatLog] = useState([
-    {
-      role: "user",
-      content:
-        "<observation:user>make me an agent to help people sell real estate</observation:user>",
-    },
-    {
-      role: "assistant",
-      content:
-        "<thought>The user wants an AI agent to help people sell real estate. The purpose of the agent is a real estate sales assistant. I must now determine what tools the real estate sales assistant can use.</thought>\n<action:talk>What tools will the agent have access to?</action:talk>\n",
-    },
-    {
-      role: "user",
-      content: "<observation:user>suggest some please</observation:user>",
-    },
-    {
-      role: "assistant",
-      content:
-        "<thought>Since the agent is going to help people sell real estate, it will need access to a database of properties, a communication system to interact with potential buyers, and a payment processing system to handle transactions. I will suggest these tools to the user.</thought>\n<action:talk>The agent will need access to a database of properties, a communication system to interact with potential buyers, and a payment processing system to handle transactions. Does this sound good?</action:talk>",
-    },
-  ]);
-  const [renderedAgentLog, setRenderedAgentLog] = useState([]);
+  const [chatLog, setChatLog] = useState([]);
+  const [formattedChatLog, setFormattedChatLog] = useState([]);
 
+  async function pushConversationTurn(agentLog, userReply) {
+    setIsQueryLoading(true);
+    setErrorState(null);
+
+    try {
+      const vtaRes = await runChatTurn({
+        userReply: userReply,
+        chatLog: agentLog,
+        agentPrompt: agentPrompt,
+      });
+      setChatLog(vtaRes.data.chatLog);
+
+      setTimeout(() => {
+        refConversationContainer.current.scrollTop =
+          refConversationContainer.current.scrollHeight;
+      }, 200);
+    } catch (ex) {
+      console.log("caught error", ex);
+      setErrorState(ex);
+    }
+
+    setUserQuery("");
+    setIsQueryLoading(false);
+  }
   useEffect(() => {
+    if (!allowSetMetaPrompt) {
+      return;
+    }
     // generate a prompt from the log, if applicable
     let generatedPrompt = "";
 
@@ -117,7 +129,9 @@ ${conversation}
   )
   .join("")}  
 `;
-    setGeneratedAgentPrompt(generatedPrompt);
+    if (agentExampleConversations.length > 0) {
+      setGeneratedAgentPrompt(generatedPrompt);
+    }
   }, [chatLog]);
 
   useEffect(() => {
@@ -179,35 +193,11 @@ ${conversation}
         }
       });
     });
-    setRenderedAgentLog(renderedLog);
+    setFormattedChatLog(renderedLog);
   }, [chatLog]);
 
-  async function pushConversationTurn(agentLog, userReply) {
-    setIsQueryLoading(true);
-    setErrorState(null);
-
-    try {
-      const vtaRes = await runChatTurn({
-        userReply: userReply,
-        chatLog: agentLog,
-      });
-      setChatLog(vtaRes.data.chatLog);
-
-      setTimeout(() => {
-        refConversationContainer.current.scrollTop =
-          refConversationContainer.current.scrollHeight;
-      }, 200);
-    } catch (ex) {
-      console.log("caught error", ex);
-      setErrorState(ex);
-    }
-
-    setUserQuery("");
-    setIsQueryLoading(false);
-  }
-
   return (
-    <Box w="100%">
+    <Box w="100%" h="100%" display="flex">
       {errorState && (
         <Box backgroundColor="red">
           <Text color="white" fontSize="xl" p="10">
@@ -216,67 +206,61 @@ ${conversation}
         </Box>
       )}
 
-      <Box>
-        <SimpleGrid height="100vh" gridTemplateRows="1fr auto">
-          <Stack m="2" overflowY="scroll" ref={refConversationContainer}>
-            {renderedAgentLog.map((c) => (
-              <ConversationTurn
-                key={c.id}
-                c={c}
-                showCOT={showCOT}
-              ></ConversationTurn>
-            ))}
-          </Stack>
-          <Box
-            border="1px solid #333"
-            borderRadius="5px"
-            backgroundColor="white"
-          >
-            {isQueryLoading && (
-              <Box p="3" display="flex" flexDir="row" gap="10px">
-                <Spinner></Spinner>
-                <Text>The agent is thinking...</Text>
-              </Box>
-            )}
+      <Grid height="100%" width="100%" templateRows="1fr auto">
+        <Stack m="2" overflowY="scroll" ref={refConversationContainer}>
+          {formattedChatLog.map((c) => (
+            <ConversationTurn
+              key={c.id}
+              c={c}
+              showCOT={showCOT}
+            ></ConversationTurn>
+          ))}
+        </Stack>
+        <Box border="1px solid #333" borderRadius="5px" backgroundColor="white">
+          {isQueryLoading && (
+            <Box p="3" display="flex" flexDir="row" gap="10px">
+              <Spinner></Spinner>
+              <Text>The agent is thinking...</Text>
+            </Box>
+          )}
 
-            <InputGroup size="md">
-              <Input
-                isDisabled={isQueryLoading}
-                variant="outline"
-                placeholder="Say something to the agent ..."
-                value={userQuery}
-                onKeyDown={async (event) => {
-                  if (event.key === "Enter" && userQuery.length > 0) {
-                    pushConversationTurn(chatLog, userQuery);
-                  }
+          <InputGroup size="md">
+            <Input
+              isDisabled={isQueryLoading}
+              variant="outline"
+              placeholder={placeholder}
+              value={userQuery}
+              onKeyDown={async (event) => {
+                if (event.key === "Enter" && userQuery.length > 0) {
+                  pushConversationTurn(chatLog, userQuery);
+                }
+              }}
+              onChange={(event) => {
+                setUserQuery(event.target.value);
+              }}
+            />
+          </InputGroup>
+
+          <Box p="10" backgroundColor={subAgentBG}>
+            <Box display="flex" flexDir="row" alignContent="center">
+              <Switch
+                mb="3"
+                isChecked={showCOT}
+                onChange={(e) => {
+                  setShowCOT(e.target.checked);
                 }}
-                onChange={(event) => {
-                  setUserQuery(event.target.value);
-                }}
-              />
-            </InputGroup>
-
-            <Box p="10" backgroundColor="#ffddee">
-              <Box display="flex" flexDir="row" alignContent="center">
-                <Switch
-                  mb="3"
-                  isChecked={showCOT}
-                  onChange={(e) => {
-                    setShowCOT(e.target.checked);
-                  }}
-                ></Switch>
-                <Text ml="5px" fontSize="sm">
-                  Show Agent's Chain of Thought
-                </Text>
-              </Box>
-
-              <Text fontSize="sm" color="gray">
-                {inputSubCaption}
+              ></Switch>
+              <Text ml="5px" fontSize="sm">
+                Show Agent's Chain of Thought
               </Text>
             </Box>
+
+            <Text fontSize="sm" color="gray">
+              {inputSubCaption}
+            </Text>
           </Box>
-        </SimpleGrid>
-      </Box>
+        </Box>
+      </Grid>
     </Box>
   );
 }

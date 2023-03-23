@@ -69,13 +69,19 @@ exports.getContination = functions.https.onRequest((req, res) => {
 
 exports.runChatTurn = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    const { chatLog, userReply } = req.body.data;
+    const { chatLog, userReply, agentPrompt } = req.body.data;
 
     const configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
     });
     const openai = new OpenAIApi(configuration);
-    const promptText = await readFile("prompt-template.txt", "utf8");
+
+    let promptText = "";
+    if (agentPrompt != null) {
+      promptText = agentPrompt;
+    } else {
+      promptText = await readFile("prompt-template.txt", "utf8");
+    }
 
     const updatedLog = [
       ...chatLog,

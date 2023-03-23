@@ -24,7 +24,7 @@ import {
 
 import { firebaseConfig } from "./utils";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import styles from "./App.css";
+import styles from "./App.css?inline";
 
 function App() {
   const firebaseApp = initializeApp(firebaseConfig);
@@ -46,6 +46,9 @@ function App() {
       <PanelGroup autoSaveId="mainPanelLayout" direction="horizontal">
         <Panel defaultSize={50}>
           <ConversationalInterface
+            placeholder="Say something to the meta agent"
+            allowSetMetaPrompt={true}
+            subAgentBG="#FFDDEE"
             inputSubCaption="This is a demo of an AI agent that helps to generate other AI
                 agents, a 'meta agent'"
           ></ConversationalInterface>
@@ -89,9 +92,23 @@ function App() {
             </PanelResizeHandle>
             <Panel defaultSize={50}>
               <Box w="100%" h="100%">
-                <Text size="lg" fontWeight="bold" textAlign="center">
-                  Generated Agent (Interactive)
-                </Text>
+                {!generatedAgentPrompt && (
+                  <Text>No agent has yet been generated</Text>
+                )}
+                {generatedAgentPrompt && (
+                  <>
+                    <Text size="lg" fontWeight="bold" textAlign="center">
+                      Generated Agent (Interactive)
+                    </Text>
+                    <ConversationalInterface
+                      agentPrompt={generatedAgentPrompt}
+                      allowSetMetaPrompt={false}
+                      placeholder="Say something to the generated agent"
+                      inputSubCaption="Interact with the generated agent"
+                      subAgentBG="#DDFFEE"
+                    ></ConversationalInterface>
+                  </>
+                )}
               </Box>
             </Panel>
           </PanelGroup>
