@@ -15,7 +15,7 @@ import {
 
 import SubAgentLog from "./SubAgentLog";
 
-function ConversationTurn({ c, showCOT }) {
+function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
   if (c.type == "action" && c.actionType == "talk") {
     return (
       <Box
@@ -26,8 +26,12 @@ function ConversationTurn({ c, showCOT }) {
         w="90%"
         borderRadius="20px"
       >
-        <Text fontSize="xs">Meta Agent</Text>
-        <Text>{c.message}</Text>
+        <Text fontSize="xs">{agentName}</Text>
+        <Text>
+          {c.message} {allowFeeback}
+        </Text>
+
+        {allowFeeback && <Box>feebdakc</Box>}
       </Box>
     );
   }

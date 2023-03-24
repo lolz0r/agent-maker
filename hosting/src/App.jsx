@@ -40,7 +40,9 @@ function App() {
           <ConversationalInterface
             placeholder="Say something to the meta agent"
             allowSetMetaPrompt={true}
+            allowFeedback={false}
             subAgentBG="#FFDDEE"
+            agentName="Meta Agent"
             inputSubCaption="This is a demo of an AI agent that helps to generate other AI agents, a 'meta agent'"
             inititalConversationLog={[
               {
@@ -115,6 +117,8 @@ function App() {
                     <ConversationalInterface
                       agentPrompt={generatedAgentPrompt}
                       allowSetMetaPrompt={false}
+                      allowFeedback={true}
+                      agentName="Generated Agent"
                       placeholder="Say something to the generated agent"
                       inputSubCaption="Interact with the generated agent"
                       subAgentBG="#DDFFEE"

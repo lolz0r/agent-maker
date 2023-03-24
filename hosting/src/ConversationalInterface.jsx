@@ -32,6 +32,8 @@ function ConversationalInterface({
   placeholder,
   subAgentBG,
   inititalConversationLog,
+  agentName,
+  allowFeedback,
 }) {
   const firebaseApp = initializeApp(firebaseConfig);
   const functions = getFunctions(firebaseApp);
@@ -88,7 +90,12 @@ function ConversationalInterface({
 
     let agentPurpose = "";
     let agentTools = [];
-    let agentRules = [];
+    let agentRules = [
+      "Don't make up anything. Only use information obtained from observations.",
+      "To get information always use a tool.",
+      "Format all responses with the proper tags, like <action:talk>...</action:talk>",
+      "Always use tools before making any claim.",
+    ];
     let agentExampleConversations = [];
     chatLog.forEach((turn) => {
       // parse the content of the turn
@@ -114,7 +121,7 @@ function ConversationalInterface({
     // now render the contents
     generatedPrompt = `${agentPurpose}
 Rules:
-${agentRules.map((rule, idx) => `${idx}. ${rule}\n`).join("")}
+${agentRules.map((rule, idx) => `${idx + 1}. ${rule}\n`).join("")}
 You have the following tools:
 ${agentTools
   .map((tool) => `<action:${tool.name}> ... ${tool.description}\n`)
@@ -190,6 +197,8 @@ ${conversation}
               key={c.id}
               c={c}
               showCOT={showCOT}
+              agentName={agentName}
+              allowFeedback={allowFeedback}
             ></ConversationTurn>
           ))}
         </Stack>
