@@ -13,25 +13,53 @@ import {
   Switch,
 } from "@chakra-ui/react";
 
+import { MdFeedback } from "react-icons/md";
+
 import SubAgentLog from "./SubAgentLog";
 
-function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
+function ConversationTurn({ c, showCOT, agentName, allowFeedback }) {
+  const [isHovering, setIsHovering] = useState(false);
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+
   if (c.type == "action" && c.actionType == "talk") {
     return (
       <Box
-        key={JSON.stringify(c)}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
         backgroundColor={"#c3ffb8"}
         alignSelf={"self-start"}
         p="3"
         w="90%"
         borderRadius="20px"
+        onClick={() => {}}
+        cursor={allowFeedback && isHovering ? "pointer" : ""}
+        style={{
+          border:
+            allowFeedback && isHovering
+              ? "1px solid #777"
+              : "1px solid transparent",
+        }}
       >
         <Text fontSize="xs">{agentName}</Text>
-        <Text>
-          {c.message} {allowFeeback}
-        </Text>
-
-        {allowFeeback && <Box>feebdakc</Box>}
+        <Box display="flex" flexDir="row">
+          <Text>{c.message}</Text>
+        </Box>
+        {false && allowFeedback && isHovering && (
+          <Box>
+            <Input
+              value={feedbackText}
+              onChange={(e) => {
+                setFeedbackText(e.target.value);
+              }}
+              mt="10px"
+              bg="rgba(255,255,255,.4)"
+              borderRadius="10px"
+              border="1px solid red"
+              placeholder="feedback ... "
+            ></Input>
+          </Box>
+        )}
       </Box>
     );
   }
@@ -39,7 +67,6 @@ function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
   if (c.type == "observation" && c.from == "user") {
     return (
       <Box
-        key={JSON.stringify(c)}
         backgroundColor={"#b8e0ff"}
         alignSelf={"self-end"}
         p="3"
@@ -54,13 +81,7 @@ function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
   if (showCOT) {
     if (c.type == "action" && c.actionType == "AddTool") {
       return (
-        <Box
-          key={JSON.stringify(c)}
-          backgroundColor={"lightgray"}
-          p="3"
-          w="90%"
-          borderRadius="20px"
-        >
+        <Box backgroundColor={"lightgray"} p="3" w="90%" borderRadius="20px">
           <Text fontSize="xs">
             <b>Added Tool:</b> <i>{c.message}</i>
           </Text>
@@ -70,7 +91,6 @@ function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
     if (c.type == "action" && c.actionType == "AddExampleConversation") {
       return (
         <Box
-          key={JSON.stringify(c)}
           backgroundColor={"lightgray"}
           alignSelf={"self-start"}
           p="3"
@@ -86,13 +106,7 @@ function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
     }
     if (c.type == "observation" && c.from != "user") {
       return (
-        <Box
-          key={JSON.stringify(c)}
-          backgroundColor={"lightgray"}
-          p="3"
-          w="90%"
-          borderRadius="20px"
-        >
+        <Box backgroundColor={"lightgray"} p="3" w="90%" borderRadius="20px">
           <Text fontSize="xs">
             <b>Agent Observation:</b>{" "}
             <i>
@@ -123,13 +137,7 @@ function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
         );
       } else {
         return (
-          <Box
-            key={JSON.stringify(c)}
-            backgroundColor={"lightgray"}
-            p="3"
-            w="90%"
-            borderRadius="20px"
-          >
+          <Box backgroundColor={"lightgray"} p="3" w="90%" borderRadius="20px">
             <Text fontSize="xs">
               <b>Agent Action:</b>{" "}
               <i>
@@ -143,13 +151,7 @@ function ConversationTurn({ c, showCOT, agentName, allowFeeback }) {
 
     if (c.type == "thought") {
       return (
-        <Box
-          key={JSON.stringify(c)}
-          backgroundColor={"lightgray"}
-          p="3"
-          w="90%"
-          borderRadius="20px"
-        >
+        <Box backgroundColor={"lightgray"} p="3" w="90%" borderRadius="20px">
           <Text fontSize="xs">
             <b>Agent Thought:</b> <i>{c.message}</i>
           </Text>

@@ -192,15 +192,17 @@ ${conversation}
 
       <Grid height="100%" width="100%" templateRows="1fr auto">
         <Stack m="2" overflowY="scroll" ref={refConversationContainer}>
-          {formattedChatLog.map((c) => (
-            <ConversationTurn
-              key={c.id}
-              c={c}
-              showCOT={showCOT}
-              agentName={agentName}
-              allowFeedback={allowFeedback}
-            ></ConversationTurn>
-          ))}
+          {formattedChatLog.map((c) => {
+            return (
+              <ConversationTurn
+                key={JSON.stringify(c)}
+                c={c}
+                showCOT={showCOT}
+                agentName={agentName}
+                allowFeedback={allowFeedback}
+              ></ConversationTurn>
+            );
+          })}
         </Stack>
         <Box border="1px solid #333" borderRadius="5px" backgroundColor="white">
           {isQueryLoading && (
