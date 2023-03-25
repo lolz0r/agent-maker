@@ -47,42 +47,176 @@ function App() {
             inititalConversationLog={[
               {
                 role: "user",
-                content:
-                  "<observation:user>make me an agent that can sell icecream, you decide the tools</observation:user>",
+                type: "observation",
+                from: "user",
+                content: "<observation:user>hello</observation:user>",
+                message: "hello",
+                id: "94942a52-2ba6-4e32-b8f7-39e7dab72d9f",
               },
               {
                 role: "assistant",
+                type: "thought",
                 content:
-                  "<thought>The user wants an AI agent to help them sell ice cream. I should determine what tools the ice cream agent bot can use.</thought>\n<action:talk>What tools will the agent have access to?</action:talk>\n",
+                  "<thought>The user has initiated contact. I should respond with a greeting.</thought>",
+                message:
+                  "The user has initiated contact. I should respond with a greeting.",
+                id: "8abf61bc-1b53-40b5-b82d-e461131c4432",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:talk>Hello! How can I assist you today?</action:talk>",
+                actionType: "talk",
+                message: "Hello! How can I assist you today?",
+                id: "7dc15c64-39fa-45c4-bfc8-86f0b67c35a4",
               },
               {
                 role: "user",
+                type: "observation",
+                from: "user",
                 content:
-                  "<observation:user>refer to my previous statement</observation:user>",
+                  "<observation:user>I wnat an agent to help me sell icecream</observation:user>",
+                message: "I wnat an agent to help me sell icecream",
+                id: "7bc6a13b-350a-46d6-8675-3c9c720148a8",
               },
               {
                 role: "assistant",
+                type: "thought",
                 content:
-                  "<thought>My apologies, I should have paid closer attention to the user's previous statement. The user wants an AI agent to help them sell ice cream. I should now determine what tools the ice cream agent bot can use.</thought>\n<action:talk>What type of ice cream will the agent be selling?</action:talk>",
+                  "<thought>The user wants an AI agent to help them sell ice cream. The purpose of the agent is an ice cream selling bot. I must now determine what tools the ice cream agent bot can use.</thought>",
+                message:
+                  "The user wants an AI agent to help them sell ice cream. The purpose of the agent is an ice cream selling bot. I must now determine what tools the ice cream agent bot can use.",
+                id: "80169f60-0d47-4265-8916-2bd0c0eeb255",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:talk>What tools will the agent have access to?</action:talk>",
+                actionType: "talk",
+                message: "What tools will the agent have access to?",
+                id: "5d9d5b70-bd58-482d-8caf-ce427ace0bf6",
               },
               {
                 role: "user",
-                content:
-                  "<observation:user>use a database tool</observation:user>",
+                type: "observation",
+                from: "user",
+                content: "<observation:user>u tell me</observation:user>",
+                message: "u tell me",
+                id: "a38dd886-db83-44df-9e61-6e6b7bb1a2ad",
               },
               {
                 role: "assistant",
+                type: "thought",
                 content:
-                  "<thought>The agent will need access to a database of ice cream flavors and prices. I must now determine how the agent will use this tool.</thought>\n<action:AddTool>Database: A database of ice cream flavors and prices</action:AddTool>\n<action:SetAgentPrompt>You are an ice cream agent designed to sell ice cream flavors and prices.</action:SetAgentPrompt>\n<thought>The agent has been given the purpose of selling ice cream, and has access to a database of ice cream flavors and prices. I should recommend a solution and see if the user finds it acceptable.</thought>\n<action:talk>I recommend that the agent use the database to look up ice cream flavors and prices. However, we should add a tool so that the generated agent can communicate with the customer. Does this sound acceptable?</action:talk>\n",
+                  "<thought>The user has left the decision of tools to me. I should recommend a set of tools that will be useful for an ice cream selling bot.</thought>",
+                message:
+                  "The user has left the decision of tools to me. I should recommend a set of tools that will be useful for an ice cream selling bot.",
+                id: "3acdd35d-6681-4785-9710-7c4a02a1a1a2",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:talk>I recommend that the agent have access to a database of ice cream flavors and prices, a payment processing system, and a communication system for interacting with customers. Does this sound acceptable?</action:talk>",
+                actionType: "talk",
+                message:
+                  "I recommend that the agent have access to a database of ice cream flavors and prices, a payment processing system, and a communication system for interacting with customers. Does this sound acceptable?",
+                id: "a6e34469-c7f7-4bd2-a327-58347d2ff802",
               },
               {
                 role: "user",
-                content: "<observation:user>ok</observation:user>",
+                type: "observation",
+                from: "user",
+                content: "<observation:user>k</observation:user>",
+                message: "k",
+                id: "0b6c834d-5b62-467a-b565-017869bdfa4a",
               },
               {
                 role: "assistant",
+                type: "thought",
                 content:
-                  "<action:AddTool>Communication System: A communication system for interacting with customers</action:AddTool>\n<thought>Because the agent is going to deal with the general public I should add rules to ensure it is courteous and professional.</thought>\n<action:AddRule>You must be courteous.</action:AddRule>\n<action:AddRule>You must always end the conversation with 'have a good day'.</action:AddRule>\n<thought>The user has accepted the solution. The agent now has access to a database of ice cream flavors and prices, and a communication system. The agent is now ready to be generated. I should add an example conversation to the agent and the example conversation should demonstrate the usage of every tool that I added.</thought>\n<action:AddExampleConversation>\n\t<thought>I am an ice cream AI agent. I should determine what the customer wants using my available tools.</thought>\n\t<action:talk>Hi, welcome to our ice cream shop. What flavor would you like?</action:talk>\n\t<observation:simulated_user>Do you have chocolate chip cookie dough?</observation:simulated_user>\n\t<thought>I should lookup the ice cream flavor in the database to determine the item's price and availability.</thought>\n\t<action:Database>Chocolate Chip Cookie Dough</action:Database>\n\t<observation:Database>Chocolate Chip Cookie Dough $4.99, available</observation:Database>\n\t<action:talk>Yes, we have Chocolate Chip Cookie Dough. It costs $4.99. Would you like anything else?</action:talk>\n\t<observation:simulated_user>No, that's all.</observation:simulated_user>\n\t<action:talk>Alright, your total is $4.99. How would you like to pay?</action:talk>\n\t<observation:simulated_user>I'll pay with my credit card.</observation:simulated_user>\n\t<action:PaymentProcessing>$4.99</action:PaymentProcessing>\n\t<action:talk>Thank you for your purchase. Have a good day!</action:talk>\n</action:AddExampleConversation>",
+                  "<thought>The user has accepted the recommended tools. I should now add these tools to the agent's toolkit.</thought>",
+                message:
+                  "The user has accepted the recommended tools. I should now add these tools to the agent's toolkit.",
+                id: "6bf29fd0-65c9-40ab-9dda-302cc22b61a3",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:AddTool>Database: A database of ice cream flavors and prices</action:AddTool>",
+                actionType: "AddTool",
+                message: "Database: A database of ice cream flavors and prices",
+                id: "48262a90-c2c5-4472-a46d-0aa610eda6d8",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:AddTool>Payment Processing System: A payment processing system for taking payments from customers</action:AddTool>",
+                actionType: "AddTool",
+                message:
+                  "Payment Processing System: A payment processing system for taking payments from customers",
+                id: "7fccfe87-5fb4-45c7-b5e5-02b792fb2491",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:AddTool>Communication System: A communication system for interacting with customers</action:AddTool>",
+                actionType: "AddTool",
+                message:
+                  "Communication System: A communication system for interacting with customers",
+                id: "ea4dbced-abb3-48ef-a6ef-63351ebb87bf",
+              },
+              {
+                role: "assistant",
+                type: "thought",
+                content:
+                  "<thought>Now that the agent has access to the necessary tools, I should add some rules to ensure that the agent behaves professionally and courteously.</thought>",
+                message:
+                  "Now that the agent has access to the necessary tools, I should add some rules to ensure that the agent behaves professionally and courteously.",
+                id: "6432ccd7-af24-486e-bdb6-f917c2a6b304",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:AddRule>You must greet the customer politely.</action:AddRule>",
+                actionType: "AddRule",
+                message: "You must greet the customer politely.",
+                id: "52f20c63-9673-458e-917c-f67acd58f7fd",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:AddRule>You must always end the conversation with 'have a nice day'.</action:AddRule>",
+                actionType: "AddRule",
+                message:
+                  "You must always end the conversation with 'have a nice day'.",
+                id: "2b76b2b0-e373-426c-a611-e4ca531ec9a8",
+              },
+              {
+                role: "assistant",
+                type: "thought",
+                content:
+                  "<thought>The agent is now ready to be generated. I should add an example conversation to the agent and the example conversation should demonstrate the usage of every tool that I added.</thought>",
+                message:
+                  "The agent is now ready to be generated. I should add an example conversation to the agent and the example conversation should demonstrate the usage of every tool that I added.",
+                id: "17a5b864-a51d-460c-83c8-e228f4c3c740",
+              },
+              {
+                role: "assistant",
+                type: "action",
+                content:
+                  "<action:AddExampleConversation>\n\t<thought>I am an ice cream AI agent. I should determine what the customer wants using my available tools.</thought>\n\t<action:talk>Hello, welcome to our ice cream shop! What can I get for you today?</action:talk>\n\t<observation:simulated_user>I would like a scoop of chocolate ice cream.</observation:simulated_user>\n\t<thought>I should lookup the item in the menu-database to determine the item's price and availability.</thought>\n\t<action:Database>Chocolate ice cream</action:Database>\n\t<observation:Database>Chocolate ice cream is available and costs $2.50.</observation:Database>\n\t<action:talk>Great choice! One scoop of chocolate ice cream costs $2.50. Would you like anything else?</action:talk>\n\t<observation:simulated_user>No, that's all.</observation:simulated_user>\n\t<action:PaymentProcessing>$2.50</action:PaymentProcessing>\n\t<action:talk>Thank you for your purchase! Have a nice day!</action:talk>\n</action:AddExampleConversation>",
+                actionType: "AddExampleConversation",
+                message:
+                  "I am an ice cream AI agent. I should determine what the customer wants using my available tools.\n\tHello, welcome to our ice cream shop! What can I get for you today?\n\tI would like a scoop of chocolate ice cream.\n\tI should lookup the item in the menu-database to determine the item's price and availability.\n\tChocolate ice cream\n\tChocolate ice cream is available and costs $2.50.\n\tGreat choice! One scoop of chocolate ice cream costs $2.50. Would you like anything else?\n\tNo, that's all.\n\t$2.50\n\tThank you for your purchase! Have a nice day!",
+                id: "6bc5f5e1-c3cb-4ea5-b6e9-6000bef96e0a",
               },
             ]}
           ></ConversationalInterface>
@@ -120,7 +254,7 @@ function App() {
                       allowFeedback={true}
                       agentName="Generated Agent"
                       placeholder="Say something to the generated agent"
-                      inputSubCaption="Interact with the generated agent"
+                      inputSubCaption="This is where you can converse with the generated agent. If the agent says something that is wrong click the offending node and give feedback here."
                       subAgentBG="#DDFFEE"
                     ></ConversationalInterface>
                   </>

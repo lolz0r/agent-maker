@@ -17,49 +17,49 @@ import { MdFeedback } from "react-icons/md";
 
 import SubAgentLog from "./SubAgentLog";
 
-function ConversationTurn({ c, showCOT, agentName, allowFeedback }) {
+function ConversationTurn({
+  c,
+  showCOT,
+  agentName,
+  allowFeedback,
+  onNodeSelect,
+  selectedNode,
+}) {
   const [isHovering, setIsHovering] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
 
   if (c.type == "action" && c.actionType == "talk") {
+    const showHover = allowFeedback && isHovering;
+    const showSelectedNode = selectedNode && selectedNode.id == c.id;
+
     return (
       <Box
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
+        onClick={() => {
+          if (allowFeedback) {
+            onNodeSelect(c);
+          }
+        }}
         backgroundColor={"#c3ffb8"}
         alignSelf={"self-start"}
         p="3"
         w="90%"
         borderRadius="20px"
-        onClick={() => {}}
         cursor={allowFeedback && isHovering ? "pointer" : ""}
         style={{
-          border:
-            allowFeedback && isHovering
-              ? "1px solid #777"
-              : "1px solid transparent",
+          border: showSelectedNode
+            ? "3px solid red"
+            : showHover
+            ? "1px solid #777"
+            : "1px solid transparent",
         }}
       >
         <Text fontSize="xs">{agentName}</Text>
         <Box display="flex" flexDir="row">
           <Text>{c.message}</Text>
         </Box>
-        {false && allowFeedback && isHovering && (
-          <Box>
-            <Input
-              value={feedbackText}
-              onChange={(e) => {
-                setFeedbackText(e.target.value);
-              }}
-              mt="10px"
-              bg="rgba(255,255,255,.4)"
-              borderRadius="10px"
-              border="1px solid red"
-              placeholder="feedback ... "
-            ></Input>
-          </Box>
-        )}
       </Box>
     );
   }

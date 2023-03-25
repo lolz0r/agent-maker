@@ -56,6 +56,7 @@ function ConversationalInterface({
 
   const [chatLog, setChatLog] = useState([]);
   const [formattedChatLog, setFormattedChatLog] = useState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
 
   async function pushConversationTurn(agentLog, userReply) {
     setIsQueryLoading(true);
@@ -149,35 +150,7 @@ ${conversation}
   }, [inititalConversationLog]);
 
   useEffect(() => {
-    let renderedLog = [];
-    chatLog.forEach((turn) => {
-      // parse the content of the turn
-      const turnContents = parseData(`<data>${turn.content}</data>`);
-      turnContents.forEach((t) => {
-        if (t.type == "observation") {
-          renderedLog.push({
-            type: t.type,
-            from: t.observationSource,
-            message: t.content,
-          });
-        }
-        if (t.type == "action") {
-          console.log(t);
-          renderedLog.push({
-            type: t.type,
-            message: t.content,
-            actionType: t.actionType,
-          });
-        }
-        if (t.type == "thought") {
-          renderedLog.push({
-            type: t.type,
-            message: t.content,
-          });
-        }
-      });
-    });
-    setFormattedChatLog(renderedLog);
+    setFormattedChatLog(chatLog);
   }, [chatLog]);
 
   return (
@@ -195,11 +168,15 @@ ${conversation}
           {formattedChatLog.map((c) => {
             return (
               <ConversationTurn
-                key={JSON.stringify(c)}
+                key={c.id}
                 c={c}
                 showCOT={showCOT}
                 agentName={agentName}
                 allowFeedback={allowFeedback}
+                selectedNode={selectedNode}
+                onNodeSelect={() => {
+                  setSelectedNode(c);
+                }}
               ></ConversationTurn>
             );
           })}
@@ -212,22 +189,43 @@ ${conversation}
             </Box>
           )}
 
-          <InputGroup size="md">
-            <Input
-              isDisabled={isQueryLoading}
-              variant="outline"
-              placeholder={placeholder}
-              value={userQuery}
-              onKeyDown={async (event) => {
-                if (event.key === "Enter" && userQuery.length > 0) {
-                  pushConversationTurn(chatLog, userQuery);
-                }
-              }}
-              onChange={(event) => {
-                setUserQuery(event.target.value);
-              }}
-            />
-          </InputGroup>
+          {!selectedNode && (
+            <InputGroup size="md">
+              <Input
+                isDisabled={isQueryLoading}
+                variant="outline"
+                placeholder={placeholder}
+                value={userQuery}
+                onKeyDown={async (event) => {
+                  if (event.key === "Enter" && userQuery.length > 0) {
+                    pushConversationTurn(chatLog, userQuery);
+                  }
+                }}
+                onChange={(event) => {
+                  setUserQuery(event.target.value);
+                }}
+              />
+            </InputGroup>
+          )}
+          {selectedNode && (
+            <InputGroup size="md">
+              <Input
+                isDisabled={isQueryLoading}
+                variant="outline"
+                border="3px solid red"
+                placeholder={"Give feedback to the generated agent ..."}
+                value={userQuery}
+                onKeyDown={async (event) => {
+                  if (event.key === "Enter" && userQuery.length > 0) {
+                    pushConversationTurn(chatLog, userQuery);
+                  }
+                }}
+                onChange={(event) => {
+                  setUserQuery(event.target.value);
+                }}
+              />
+            </InputGroup>
+          )}
 
           <Box p="10" backgroundColor={subAgentBG}>
             <Box display="flex" flexDir="row" alignContent="center">

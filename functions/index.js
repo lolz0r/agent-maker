@@ -2,6 +2,8 @@ const functions = require("firebase-functions");
 const cors = require("cors")({ origin: true });
 const { Configuration, OpenAIApi } = require("openai");
 const { readFile } = require("fs/promises");
+const { DOMParser, XMLSerializer } = require("@xmldom/xmldom");
+const { v4: uuidv4 } = require("uuid");
 
 /*
 const { createMetaAgent } = require("./agentFramework/metaAgent.js");
@@ -67,6 +69,67 @@ exports.getContination = functions.https.onRequest((req, res) => {
 });
 */
 
+function parseNodes(nodes) {
+  let parsed = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    console.log(node.nodeName);
+    const [nodePrefix, nodeSuffix] = node.nodeName.split(":");
+    ``;
+    const content = node.toString();
+    const message = node.textContent.trim();
+
+    switch (nodePrefix) {
+      case "thought":
+        parsed.push({ type: nodePrefix, content, message });
+        break;
+
+      case "action":
+        if (nodeSuffix == "AddExampleConversation") {
+          const subConversation = parseNodes(node.childNodes);
+
+          parsed.push({
+            type: nodePrefix,
+            actionType: nodeSuffix,
+            content,
+            message,
+            subConversation,
+            innerText: node.innerHTML,
+          });
+        } else {
+          parsed.push({
+            type: nodePrefix,
+            actionType: nodeSuffix,
+            content,
+            message,
+          });
+        }
+
+        break;
+
+      case "observation":
+        parsed.push({
+          type: nodePrefix,
+          observationSource: nodeSuffix,
+          content,
+          message,
+        });
+        break;
+    }
+  }
+  return parsed;
+}
+
+function parseData(input) {
+  //const dom = new JSDOM(input, { contentType: "text/xml" });
+  const doc = new DOMParser().parseFromString(input, "text/xml");
+  const nodes = doc.childNodes[0].childNodes;
+
+  const parsed = parseNodes(nodes);
+
+  return parsed;
+}
+
 exports.runChatTurn = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     const { chatLog, userReply, agentPrompt } = req.body.data;
@@ -102,18 +165,67 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
             "<thought>I must always ensure that I wrap my thoughts and actions in the proper tags, like XML</thought>",
         },
         ...updatedLog,
-      ],
+      ].map((turn) => {
+        return { role: turn.role, content: turn.content };
+      }),
       temperature: 0,
       stop: `<observation:user>`,
     });
 
     const parsedPromptResult = promptResult.data.choices[0];
-    console.log(parsedPromptResult);
+    console.log("parsed prompt", parsedPromptResult);
+
+    // parse clustered items and give each a unique id
+    let renderedLog = [];
+    const _ = [...updatedLog, parsedPromptResult.message].forEach((turn) => {
+      // parse the content of the turn
+      console.log("turn", turn);
+      const turnContents = parseData(`<data>${turn.content}</data>`);
+      //console.log("****");
+      //console.log(turnContents);
+      //console.log("****");
+
+      turnContents.forEach((t) => {
+        //console.log(t);
+        if (t.type == "observation") {
+          renderedLog.push({
+            role: turn.role,
+            type: t.type,
+            from: t.observationSource,
+            content: t.content,
+            message: t.message,
+          });
+        }
+        if (t.type == "action") {
+          //console.log(t);
+          renderedLog.push({
+            role: turn.role,
+            type: t.type,
+            content: t.content,
+            actionType: t.actionType,
+            message: t.message,
+          });
+        }
+        if (t.type == "thought") {
+          renderedLog.push({
+            role: turn.role,
+            type: t.type,
+            content: t.content,
+            message: t.message,
+          });
+        }
+      });
+    });
 
     res.json({
       status: "OK",
       data: {
-        chatLog: [...updatedLog, parsedPromptResult.message],
+        chatLog: renderedLog.map((turn) => {
+          if (!turn.id) {
+            turn.id = uuidv4();
+          }
+          return { ...turn };
+        }),
       },
     });
   });
