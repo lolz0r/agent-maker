@@ -146,10 +146,14 @@ ${conversation}
   }, [chatLog]);
 
   useEffect(() => {
-    if (inititalConversationLog && inititalConversationLog.length > 0) {
+    if (
+      inititalConversationLog &&
+      inititalConversationLog.length > 0 &&
+      chatLog.length == 0
+    ) {
       setChatLog(inititalConversationLog);
     }
-  }, [inititalConversationLog]);
+  }, [inititalConversationLog, chatLog]);
 
   useEffect(() => {
     setFormattedChatLog(chatLog);
