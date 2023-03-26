@@ -254,7 +254,7 @@ function App() {
                       allowFeedback={true}
                       agentName="Generated Agent"
                       placeholder="Say something to the generated agent"
-                      inputSubCaption="This is where you can converse with the generated agent. If the agent says something that is wrong click the offending node and give feedback here."
+                      inputSubCaption="This is where you can converse with the generated agent. If the agent says something that is wrong you can give feedback by prefixing '/feedback ' to your responce."
                       subAgentBG="#DDFFEE"
                     ></ConversationalInterface>
                   </>
