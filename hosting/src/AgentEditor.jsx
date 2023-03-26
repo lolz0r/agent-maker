@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Box, Input, Spinner, IconButton } from "@chakra-ui/react";
+import { Box, Input, Spinner, IconButton, Textarea } from "@chakra-ui/react";
 import { GiBrainstorm } from "react-icons/gi";
 
 import { initializeApp } from "firebase/app";
@@ -77,10 +77,20 @@ function AgentEditor({}) {
       });
     }, [editor, generatedAgentPrompt]);
   }
+  const [generatedAgentPrompt, setGeneratedAgentPrompt] = store.useState(
+    "generatedAgentPrompt"
+  );
 
   return (
     <Box h="100%">
-      <LexicalComposer initialConfig={config}>
+      <Textarea
+        h="100%"
+        fontSize="10px"
+        value={generatedAgentPrompt}
+        onChange={(e) => setGeneratedAgentPrompt(e.target.value)}
+      ></Textarea>
+      {/*
+<LexicalComposer initialConfig={config}>
         <PlainTextPlugin
           contentEditable={<ContentEditable />}
           placeholder={
@@ -92,16 +102,18 @@ function AgentEditor({}) {
           onChange={(editorState) => {
             editorState.read(() => {
               // Read the contents of the EditorState here.
-              const root = $getRoot();
-              const selection = $getSelection();
-
-              console.log(root, selection);
+              const textContent = $getRoot().getTextContent();
+              if (textContent.length > 0) {
+                //debugger;
+                //setGeneratedAgentPrompt(textContent);
+              }
             });
           }}
         />
         <HistoryPlugin />
         <AgentDataPlugin />
       </LexicalComposer>
+*/}
     </Box>
   );
 }

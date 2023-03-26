@@ -48,6 +48,7 @@ function ConversationalInterface({
 
   const runChatTurn = httpsCallable(functions, "runChatTurn");
   const parseMessageContents = httpsCallable(functions, "parseMessageContents");
+  const runGPTCompletion = httpsCallable(functions, "runGPTCompletion");
 
   const refConversationContainer = useRef(null);
 
@@ -59,6 +60,32 @@ function ConversationalInterface({
   const [chatLog, setChatLog] = useState([]);
   const [formattedChatLog, setFormattedChatLog] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
+
+  async function processUserFeedback(userFeedback) {
+    let prompt = `CONVERSATION:
+    ####
+    ${
+      chatLog.map((turn) =>
+        JSON.stringify({ content: turn.content, role: turn.role })
+      ) + "\n"
+    }
+    ####
+
+    Agent Specs:
+=========
+${generatedAgentPrompt}
+=========
+
+
+How would you change the aforementioned rules based on this feedback: "${userFeedback}"? Render the updated rules within the original agent spec, verbosely. (include rules, tool descriptions, and any existing Example Conversations) \n
+    `;
+    setIsQueryLoading(true);
+    const r = await runGPTCompletion({ prompt: prompt });
+
+    setGeneratedAgentPrompt(r.data.response.text);
+    setUserQuery("");
+    setIsQueryLoading(false);
+  }
 
   async function pushConversationTurn(agentLog, userReply) {
     setIsQueryLoading(true);
@@ -98,6 +125,7 @@ function ConversationalInterface({
       "To get information always use a tool.",
       "Format all responses with the proper tags, like <action:talk>...</action:talk>",
       "Always use tools before making any claim.",
+      "Always end your conversation turn with <action:Talk>...",
     ];
     let agentExampleConversations = [];
     chatLog.forEach((turn) => {
@@ -233,26 +261,12 @@ ${conversation}
                 value={userQuery}
                 onKeyDown={async (event) => {
                   if (event.key === "Enter" && userQuery.length > 0) {
-                    pushConversationTurn(chatLog, userQuery);
-                  }
-                }}
-                onChange={(event) => {
-                  setUserQuery(event.target.value);
-                }}
-              />
-            </InputGroup>
-          )}
-          {selectedNode && (
-            <InputGroup size="md">
-              <Input
-                isDisabled={isQueryLoading}
-                variant="outline"
-                outline="3px solid red"
-                placeholder={"Give feedback to the generated agent ..."}
-                value={userQuery}
-                onKeyDown={async (event) => {
-                  if (event.key === "Enter" && userQuery.length > 0) {
-                    pushConversationTurn(chatLog, userQuery);
+                    if (userQuery.startsWith("/feedback")) {
+                      const feedback = userQuery.slice("/feedback".length + 1);
+                      processUserFeedback(feedback);
+                    } else {
+                      pushConversationTurn(chatLog, userQuery);
+                    }
                   }
                 }}
                 onChange={(event) => {
