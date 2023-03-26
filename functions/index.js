@@ -122,6 +122,7 @@ function parseNodes(nodes) {
 
 function parseData(input) {
   //const dom = new JSDOM(input, { contentType: "text/xml" });
+  console.log("about to parse", input);
   const doc = new DOMParser().parseFromString(input, "text/xml");
   const nodes = doc.childNodes[0].childNodes;
 
@@ -129,6 +130,72 @@ function parseData(input) {
 
   return parsed;
 }
+
+function parseMessageContents(messagesContents) {
+  // parse clustered items and give each a unique id
+  let renderedLog = [];
+  const _ = messagesContents.forEach((turn) => {
+    // parse the content of the turn
+
+    const turnContents = parseData(`<data>${turn.content}</data>`);
+    //console.log("****");
+    console.log(turnContents);
+    //console.log("****");
+
+    turnContents.forEach((t) => {
+      //console.log(t);
+      if (t.type == "observation") {
+        renderedLog.push({
+          role: turn.role,
+          type: t.type,
+          from: t.observationSource,
+          content: t.content,
+          message: t.message,
+        });
+      }
+
+      if (t.type == "action") {
+        //console.log(t);
+        renderedLog.push({
+          role: turn.role,
+          type: t.type,
+          content: t.content,
+          actionType: t.actionType,
+          message: t.message,
+        });
+      }
+
+      if (t.type == "thought") {
+        renderedLog.push({
+          role: turn.role,
+          type: t.type,
+          content: t.content,
+          message: t.message,
+        });
+      }
+    });
+  });
+
+  return renderedLog.map((turn) => {
+    if (!turn.id) {
+      turn.id = uuidv4();
+    }
+    return { ...turn };
+  });
+}
+
+exports.parseMessageContents = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const { messageContents } = req.body.data;
+    const r = parseMessageContents([messageContents])[0];
+    res.json({
+      status: "OK",
+      data: {
+        parsedMessage: r,
+      },
+    });
+  });
+});
 
 exports.runChatTurn = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
@@ -146,14 +213,13 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
       promptText = await readFile("prompt-template.txt", "utf8");
     }
 
-    const updatedLog = [
-      ...chatLog,
-      {
+    let updatedLog = [...chatLog];
+    if (userReply != null) {
+      updatedLog.push({
         role: "user",
         content: `<observation:user>${userReply}</observation:user>`,
-      },
-    ];
-
+      });
+    }
     const promptResult = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       max_tokens: 1000,
@@ -176,56 +242,15 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
     console.log("parsed prompt", parsedPromptResult);
 
     // parse clustered items and give each a unique id
-    let renderedLog = [];
-    const _ = [...updatedLog, parsedPromptResult.message].forEach((turn) => {
-      // parse the content of the turn
-      console.log("turn", turn);
-      const turnContents = parseData(`<data>${turn.content}</data>`);
-      //console.log("****");
-      //console.log(turnContents);
-      //console.log("****");
-
-      turnContents.forEach((t) => {
-        //console.log(t);
-        if (t.type == "observation") {
-          renderedLog.push({
-            role: turn.role,
-            type: t.type,
-            from: t.observationSource,
-            content: t.content,
-            message: t.message,
-          });
-        }
-        if (t.type == "action") {
-          //console.log(t);
-          renderedLog.push({
-            role: turn.role,
-            type: t.type,
-            content: t.content,
-            actionType: t.actionType,
-            message: t.message,
-          });
-        }
-        if (t.type == "thought") {
-          renderedLog.push({
-            role: turn.role,
-            type: t.type,
-            content: t.content,
-            message: t.message,
-          });
-        }
-      });
-    });
+    let renderedLog = parseMessageContents([
+      ...updatedLog,
+      parsedPromptResult.message,
+    ]);
 
     res.json({
       status: "OK",
       data: {
-        chatLog: renderedLog.map((turn) => {
-          if (!turn.id) {
-            turn.id = uuidv4();
-          }
-          return { ...turn };
-        }),
+        chatLog: renderedLog,
       },
     });
   });

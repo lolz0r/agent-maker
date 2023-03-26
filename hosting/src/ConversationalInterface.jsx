@@ -24,6 +24,7 @@ import {
 } from "firebase/functions";
 import { firebaseConfig, parseData } from "./utils";
 import ConversationTurn from "./ConversationTurn";
+import ConversationLineBreak from "./ConversationLineBreak";
 
 function ConversationalInterface({
   inputSubCaption,
@@ -46,6 +47,7 @@ function ConversationalInterface({
   }
 
   const runChatTurn = httpsCallable(functions, "runChatTurn");
+  const parseMessageContents = httpsCallable(functions, "parseMessageContents");
 
   const refConversationContainer = useRef(null);
 
@@ -177,6 +179,35 @@ ${conversation}
                 onNodeSelect={() => {
                   setSelectedNode(c);
                 }}
+                onNodeDelete={async () => {
+                  const matchingNodeIdx = chatLog.findIndex(
+                    (node) => node.id == c.id
+                  );
+                  const updatedChatLog = chatLog.slice(0, matchingNodeIdx);
+                  setChatLog(updatedChatLog);
+                  pushConversationTurn(updatedChatLog, null);
+                }}
+                onNodeChange={async (updatedNode) => {
+                  // find the node within the chatlog, update it, then trigger a new update sequence
+                  const matchingNodeIdx = chatLog.findIndex(
+                    (node) => node.id == updatedNode.id
+                  );
+
+                  const r = await parseMessageContents({
+                    messageContents: {
+                      role: updatedNode.role,
+                      content: updatedNode.content,
+                    },
+                  });
+
+                  chatLog[matchingNodeIdx] = r.data.parsedMessage;
+                  const updatedChatLog = [...chatLog].slice(
+                    0,
+                    matchingNodeIdx + 1
+                  );
+                  setChatLog(updatedChatLog);
+                  pushConversationTurn(updatedChatLog, null);
+                }}
               ></ConversationTurn>
             );
           })}
@@ -212,7 +243,7 @@ ${conversation}
               <Input
                 isDisabled={isQueryLoading}
                 variant="outline"
-                border="3px solid red"
+                outline="3px solid red"
                 placeholder={"Give feedback to the generated agent ..."}
                 value={userQuery}
                 onKeyDown={async (event) => {
