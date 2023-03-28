@@ -220,37 +220,64 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
         content: `<observation:user>${userReply}</observation:user>`,
       });
     }
-    const promptResult = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      max_tokens: 1000,
-      messages: [
-        { role: "system", content: promptText },
-        {
-          role: "assistant",
-          content:
-            "<thought>I must always ensure that I wrap my thoughts and actions in the proper tags, like XML</thought>",
-        },
+
+    let finalLog = null;
+    while (true) {
+      const promptResult = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        max_tokens: 2000,
+        messages: [
+          { role: "system", content: promptText },
+          {
+            role: "assistant",
+            content:
+              "<thought>I must always ensure that I wrap my thoughts and actions in the proper tags, like XML. Also, the user can only see messages sent via the 'Talk' tool.</thought>",
+          },
+          ...updatedLog,
+        ].map((turn) => {
+          return { role: turn.role, content: turn.content };
+        }),
+        temperature: 0,
+        stop: `<observation:user>`,
+      });
+
+      const parsedPromptResult = promptResult.data.choices[0];
+      console.log("parsed prompt", parsedPromptResult);
+
+      // parse clustered items and give each a unique id
+      let renderedLog = parseMessageContents([
         ...updatedLog,
-      ].map((turn) => {
-        return { role: turn.role, content: turn.content };
-      }),
-      temperature: 0,
-      stop: `<observation:user>`,
-    });
+        parsedPromptResult.message,
+      ]);
 
-    const parsedPromptResult = promptResult.data.choices[0];
-    console.log("parsed prompt", parsedPromptResult);
-
-    // parse clustered items and give each a unique id
-    let renderedLog = parseMessageContents([
-      ...updatedLog,
-      parsedPromptResult.message,
-    ]);
+      // determine if the last action is a 'talk' from the agent, if no insert a thought and try again
+      const lastTurn = renderedLog[renderedLog.length - 1];
+      if (
+        lastTurn &&
+        lastTurn.type == "action" &&
+        lastTurn.actionType == "talk" &&
+        lastTurn.role == "assistant"
+      ) {
+        finalLog = renderedLog;
+        break;
+      } else {
+        // append the updated log and try again
+        updatedLog = [
+          ...renderedLog,
+          {
+            role: "assistant",
+            type: "thought",
+            content:
+              "<thought>I must say something via the 'Talk' action</thought>",
+          },
+        ];
+      }
+    }
 
     res.json({
       status: "OK",
       data: {
-        chatLog: renderedLog,
+        chatLog: finalLog,
       },
     });
   });

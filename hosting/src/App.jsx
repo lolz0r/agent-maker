@@ -44,7 +44,9 @@ function App() {
             subAgentBG="#FFDDEE"
             agentName="Meta Agent"
             inputSubCaption="This is a demo of an AI agent that helps to generate other AI agents, a 'meta agent'"
-            inititalConversationLog={[
+            inititalConversationLog={
+              [
+                /*
               {
                 role: "user",
                 type: "observation",
@@ -218,7 +220,9 @@ function App() {
                   "I am an ice cream AI agent. I should determine what the customer wants using my available tools.\n\tHello, welcome to our ice cream shop! What can I get for you today?\n\tI would like a scoop of chocolate ice cream.\n\tI should lookup the item in the menu-database to determine the item's price and availability.\n\tChocolate ice cream\n\tChocolate ice cream is available and costs $2.50.\n\tGreat choice! One scoop of chocolate ice cream costs $2.50. Would you like anything else?\n\tNo, that's all.\n\t$2.50\n\tThank you for your purchase! Have a nice day!",
                 id: "6bc5f5e1-c3cb-4ea5-b6e9-6000bef96e0a",
               },
-            ]}
+              */
+              ]
+            }
           ></ConversationalInterface>
         </Panel>
         <PanelResizeHandle>
