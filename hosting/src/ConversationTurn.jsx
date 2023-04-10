@@ -41,7 +41,7 @@ function ConversationTurn({
   const [activeSelectedNodeContents, setActiveSelectedNodeContents] =
     useState("");
   function renderTurnContents() {
-    if (c.type == "action" && c.actionType == "talk") {
+    if (c.type == "action" && c.actionType.toLowerCase() == "talk") {
       const showHover = allowFeedback && isHovering;
       const showSelectedNode = selectedNode && selectedNode.id == c.id;
 

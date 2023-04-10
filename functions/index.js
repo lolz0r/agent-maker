@@ -135,10 +135,10 @@ exports.parseMessageContents = functions.https.onRequest((req, res) => {
 
 exports.runChatTurn = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    const { chatLog, userReply, agentPrompt } = req.body.data;
+    const { chatLog, userReply, agentPrompt, openAIAPIKey } = req.body.data;
 
     const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: openAIAPIKey,
     });
     const openai = new OpenAIApi(configuration);
 
@@ -188,16 +188,22 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
 
       // determine if the last action is a 'talk' from the agent, if no insert a thought and try again
       const lastTurn = renderedLog[renderedLog.length - 1];
+      console.log("last turn", lastTurn);
+
       if (
         lastTurn &&
-        lastTurn.type == "action" &&
-        lastTurn.actionType == "talk" &&
-        lastTurn.role == "assistant"
+        lastTurn.type &&
+        lastTurn.type.toLowerCase() == "action" &&
+        lastTurn.actionType &&
+        lastTurn.actionType.toLowerCase() == "talk" &&
+        lastTurn.role &&
+        lastTurn.role.toLowerCase() == "assistant"
       ) {
         finalLog = renderedLog;
         break;
       } else {
         // append the updated log and try again
+        // sometimes the LLM won't actually say anything - so we inject this thought and try again
         updatedLog = [
           ...renderedLog,
           {
@@ -221,10 +227,10 @@ exports.runChatTurn = functions.https.onRequest((req, res) => {
 
 exports.runGPTCompletion = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    const { prompt } = req.body.data;
+    const { prompt, openAIAPIKey } = req.body.data;
 
     const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: openAIAPIKey,
     });
     const openai = new OpenAIApi(configuration);
     const response = await openai.createCompletion({

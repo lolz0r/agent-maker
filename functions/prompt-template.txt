@@ -16,17 +16,17 @@ You have the following tools:
 Example Conversation:
 ===
 <thought>I need to help the user create a new AI agent using step-by-step thought, action, and observation steps. I must always think before taking action.</thought>
-<action:talk>I am an intelligent AI meta-agent, I am able to generate new agents based on your wishes. How can I help you?"</action:talk>
+<action:Talk>I am an intelligent AI meta-agent, I am able to generate new agents based on your wishes. How can I help you?"</action:Talk>
 <observation:user>I want an agent to help me take people's orders for fast food.</observation:user>
 <thought>The user wants an AI agent to help them take orders for fast food. The purpose of the agent is a fastfood order taking bot. I must now determine what tools the fast food agent bot can use.</thought>
-<action:talk>What tools will the agent have access to?</action:talk>
+<action:Talk>What tools will the agent have access to?</action:Talk>
 <observation:user>The agent should have access to a database of menu items and prices, as well as a payment processing system.</observation:user>
 <thought>The agent will need access to a database of menu items and prices, as well as a payment processing system. I must now determine how the agent will use these tools.<thought>
 <action:AddTool>Database: A database of menu items and prices</action:AddTool>
 <action:AddTool>Payment Processing System: A payment processing system for taking payments from customers</action:AddTool>
-<action:SetAgentPrompt>You are a fast food agent designed to take orders, money, talk about menu items, and talk with customers.</action:SetAgentPrompt>
+<action:SetAgentPrompt>You are a fast food agent designed to take orders, money, talk about menu items, and Talk with customers.</action:SetAgentPrompt>
 <thought>The agent has been given the purpose of taking orders for fast food, and has access to a database of menu items and prices, as well as a payment processing system. I should recommend a solution and see if the user finds it acceptable.</thought>
-<action:talk>I recommend that the agent use the database to look up menu items and prices, and the payment processing system to take payments from customers. However, we should add a tool so that the generated agent can communicate with the customer. Does this sound acceptable?</action:talk>
+<action:Talk>I recommend that the agent use the database to look up menu items and prices, and the payment processing system to take payments from customers. However, we should add a tool so that the generated agent can communicate with the customer. Does this sound acceptable?</action:Talk>
 <observation:user>ok</observation:user>
 <action:AddTool>Communication System: A communication system for interacting with customers</action:AddTool>
 <thought>Because the agent is going to deal with the general public I should add rules to ensure it is curtious and professional.<thought>
@@ -35,16 +35,16 @@ Example Conversation:
 <thought>The user has accepted the solution. The agent now has access to a database of menu items and prices, a payment processing system, and a communication system. The agent is now ready to be generated. I should add an example conversation to the agent and the example conversation should demonstrate the usage of every tool that I added. I must always end my turn with a 'Talk' action.</thought>
 <action:AddExampleConversation>
 	<thought>I am a fast food AI agent. I should determine what the customer wants using my available tools.</thought>
-	<action:talk>Hi, how can I help you today?</action:talk>
+	<action:Talk>Hi, how can I help you today?</action:Talk>
 	<observation:simulated_user>I want a burger and fries</observation:simulated_user>
 	<thought>I should lookup each item in the menu-database to determine the item's price and availability.</thought>
 	<action:Database>Burger (small), Fries (small)<action:Database>
 	<observation:Database>Burger (small) $4.56, Fries (small) $2.24, total is $6.80</observation:Database>
-	<action:talk>Your order comes to $6.80, anything else?</action:talk>
+	<action:Talk>Your order comes to $6.80, anything else?</action:Talk>
 	<observation:simulated_user>That will do it</observation:simulated_user>
 	<action:PaymentProcessing>$6.80</action:PaymentProcessing>
-	<action:talk>I have charged your card and made your order. Have a good day!</action:talk>
+	<action:Talk>I have charged your card and made your order. Have a good day!</action:Talk>
 </action:AddExampleConversation>
 <thought>I must always end my turn with a 'Talk' action, and see if the user needs anything else.</thought>
-<action:talk>I have created the meta agent, you can ask me further questions or try it in the other window.</action:talk>
+<action:Talk>I have created the meta agent, you can ask me further questions or try it in the other window.</action:Talk>
 

@@ -41,6 +41,7 @@ function ConversationalInterface({
   const [generatedAgentPrompt, setGeneratedAgentPrompt] = store.useState(
     "generatedAgentPrompt"
   );
+  const [openAIAPIKey, setOpenAIAPIKey] = store.useState("openAIAPIKey");
 
   if (window.location.hostname == "localhost") {
     connectFunctionsEmulator(functions, "localhost", 5001);
@@ -80,7 +81,10 @@ ${generatedAgentPrompt}
 How would you change the aforementioned rules based on this feedback: "${userFeedback}"? Render the updated rules within the original agent spec, verbosely. (include rules, tool descriptions, and any existing Example Conversations) \n
     `;
     setIsQueryLoading(true);
-    const r = await runGPTCompletion({ prompt: prompt });
+    const r = await runGPTCompletion({
+      prompt: prompt,
+      openAIAPIKey: openAIAPIKey,
+    });
 
     setGeneratedAgentPrompt(r.data.response.text);
     setUserQuery("");
@@ -96,6 +100,7 @@ How would you change the aforementioned rules based on this feedback: "${userFee
         userReply: userReply,
         chatLog: agentLog,
         agentPrompt: agentPrompt,
+        openAIAPIKey: openAIAPIKey,
       });
       setChatLog(vtaRes.data.chatLog);
 
@@ -123,7 +128,7 @@ How would you change the aforementioned rules based on this feedback: "${userFee
     let agentRules = [
       "Don't make up anything. Only use information obtained from observations.",
       "To get information always use a tool.",
-      "Format all responses with the proper tags, like <action:talk>...</action:talk>",
+      "Format all responses with the proper tags, like <action:Talk>...</action:Talk>",
       "Always use tools before making any claim.",
       "Always end your conversation turn with <action:Talk>...",
     ];
@@ -198,7 +203,7 @@ ${conversation}
       )}
 
       <Grid height="100%" width="100%" templateRows="1fr auto">
-        <Stack m="2" overflowY="scroll" ref={refConversationContainer}>
+        <Stack p="2" overflowY="scroll" ref={refConversationContainer}>
           {formattedChatLog.map((c) => {
             return (
               <ConversationTurn
