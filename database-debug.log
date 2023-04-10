@@ -1,4 +1,8 @@
-13:00:03.846 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-13:00:04.030 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
-13:00:13.831 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - agent-maker-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 154ms, init: 0ms
-13:00:13.892 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace agent-maker-default-rtdb status Active to Active
+18:48:22.206 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+18:48:22.389 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+18:48:33.665 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - agent-maker-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 191ms, init: 0ms
+18:48:33.773 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace agent-maker-default-rtdb status Active to Active
+14:05:57.594 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+14:05:57.623 [NamespaceSystem-akka.actor.default-dispatcher-11] INFO com.firebase.core.namespace.Terminator$Terminator - 1 actors left to terminate: agent-maker-default-rtdb
+14:05:57.632 [NamespaceSystem-akka.actor.default-dispatcher-12] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for agent-maker-default-rtdb
+14:05:57.638 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.
